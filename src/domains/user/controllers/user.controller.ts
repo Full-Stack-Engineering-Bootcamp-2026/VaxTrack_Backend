@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Service } from "typedi";
-import { UserService } from "../service/user.service";
+import { UserService } from "../services/user.service";
 import { UserCreateDto } from "../types/user.dto";
 import { HttpStatus } from "../../../common/constants/http-status.constants";
 import { SuccessMessages } from "../../../common/constants/success-messages.constants";
