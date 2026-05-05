@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Dependent } from "./dependent.entity";
-import { Vaccine } from "./vaccine.entity";
-import { User } from "./user.entity";
+import { User } from "../../user/entities/user.entity";
+import { Vaccine } from "../../vaccine/entities/vaccine.entity";
+import { Dependent } from "../../dependant/entities/dependent.entity";
 
 export enum Status {
     COMPLETED = "COMPLETED",

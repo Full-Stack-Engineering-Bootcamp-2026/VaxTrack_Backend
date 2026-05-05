@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { VaccinationRecord } from "./vaccinationRecord.enity";
-import { User } from "./user.entity";
+import { VaccinationRecord } from "../../vaccination-record/entities/vaccinationRecord.enity";
+import { User } from "../../user/entities/user.entity";
 
 export enum Gender {
     MALE = 'male',
