@@ -19,4 +19,13 @@ export class UserController {
             data,
         });
     }
+
+    public async login(req: Request, res: Response) {
+        const data = await this.service.login(req.body);
+        generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: SuccessMessages.LOGIN,
+            data,
+        });
+    }
 }

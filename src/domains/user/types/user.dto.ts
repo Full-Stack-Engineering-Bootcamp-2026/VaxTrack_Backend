@@ -14,3 +14,12 @@ export interface UserCreateDto {
     password: string;
     phone?: string;
 }
+
+export interface UserLoginDto {
+    email: string
+    password: string
+}
+
+export interface LoginResponseDto {
+    token: string
+}
