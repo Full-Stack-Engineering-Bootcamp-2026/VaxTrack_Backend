@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Service } from "typedi";
-import { UserController } from "../controller/user.controller";
+import { UserController } from "../controllers/user.controller";
 import { validate } from "../../../common/middleware/validate.middleware";
 import { asyncHandler } from "../../../common/utils/async-handler";
 import { loginUserSchema, registerUserSchema } from "../validator/user.validator";
