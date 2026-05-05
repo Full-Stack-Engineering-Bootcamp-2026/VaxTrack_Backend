@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { VaccinationRecord } from "./vaccinationRecord.enity";
+import { VaccinationRecord } from "../../vaccination-record/entities/vaccinationRecord.enity";
 
 @Entity()
 export class Vaccine {

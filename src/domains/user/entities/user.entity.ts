@@ -1,14 +1,13 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Dependent } from "./dependent.entity";
-import { VaccinationRecord } from "./vaccinationRecord.enity";
-import { Activity } from "./activity.entity";
+import { VaccinationRecord } from "../../vaccination-record/entities/vaccinationRecord.enity";
+import { Activity } from "../../activity/entities/activity.entity";
+import { Dependent } from "../../dependant/entities/dependent.entity";
 
 export enum UserRole {
     GUARDIAN = "guardian",
     STAFF = "staff",
     ADMIN = "admin"
 }
-
 
 @Entity()
 export class User {
