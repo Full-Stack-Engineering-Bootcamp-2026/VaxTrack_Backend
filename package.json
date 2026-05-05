@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "----------- TYPEORM MIGRATION SCRIPTS -----------": "",
+    "migration:create": "npx typeorm migration:create",
+    "migration:run": "npx typeorm-ts-node-commonjs migration:run -d src/db/db.ts",
+    "migration:revert": "npx typeorm-ts-node-commonjs migration:revert -d src/db/db.ts",
+    "migration:show": "npx typeorm-ts-node-commonjs migration:show -d src/db/db.ts",
+    "migration:generate": "npx typeorm-ts-node-commonjs migration:generate src/migrations/Init -d src/db/db.ts"
   },
   "keywords": [],
   "author": "",
