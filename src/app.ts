@@ -5,6 +5,8 @@ import "reflect-metadata";
 
 import { AppDataSource } from "./db/db";
 import { success, failure } from "./Http_Response/response";
+import Container from "typedi";
+import { UserRoutes } from "./domains/user/routes/user.routes";
 
 dotenv.config();
 
@@ -46,6 +48,10 @@ class Application {
     this.app.get("/", (_req: Request, res: Response) => {
       return res.json(success(null, "Server is running"));
     });
+
+    const userRoutes = Container.get(UserRoutes)
+
+    this.app.use("/api/users",userRoutes.getRoutes())
   }
 
   private async connectDatabase(): Promise<void> {
