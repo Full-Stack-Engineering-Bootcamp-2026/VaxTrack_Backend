@@ -12,7 +12,7 @@ export enum Relationship {
     OTHER = "other",
 }
 
-@Entity("dependent")
+@Entity()
 export class Dependent {
     @PrimaryGeneratedColumn("uuid")
     id: string;
