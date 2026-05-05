@@ -1,4 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Dependent } from "./dependent.entity";
+import { VaccinationRecord } from "./vaccinationRecord.enity";
+import { Activity } from "./activity.entity";
 
 export enum UserRole {
     GUARDIAN = "guardian",
