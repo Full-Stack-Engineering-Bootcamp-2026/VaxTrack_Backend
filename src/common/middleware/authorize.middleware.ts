@@ -6,6 +6,7 @@ import {
   getAllRolesRequiredMessage,
 } from "../constants/auth-error-messages.constants";
 import { UserRole } from "../../domains/user/entities/user.entity";
+import { AuthRequest } from "../interfaces/auth-request.interface";
 
 /**
  * =============================================================================
@@ -31,7 +32,7 @@ import { UserRole } from "../../domains/user/entities/user.entity";
  * router.post('/reports', authenticate, requireRole('ADMIN', 'MANAGER'), handler);
  */
 export const requireRole = (...roles: UserRole[]) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
       res.status(HttpStatus.UNAUTHORIZED).json({
         status: HttpStatus.UNAUTHORIZED,
