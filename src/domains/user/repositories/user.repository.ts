@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import { Repository } from "typeorm";
 import { AppDataSource } from "../../../db/db";
 import { User, UserRole } from "../entities/user.entity";
-import { UserCreateDto } from "../types/user.dto";
+import { UpdateProfileDto, UserCreateDto } from "../types/user.dto";
 
 @Service()
 export class UserRepository {
@@ -39,8 +39,26 @@ export class UserRepository {
     async updatePassword(id: number, password: string): Promise<void> {
         await this.repository.update(id, {
             password,
-            resetToken: '',
-            resetTokenExpiry: '',
+            resetToken: "",
+            resetTokenExpiry: null as unknown as Date,
         });
+    }
+
+    async findById(id: number): Promise<User | null> {
+        return this.repository.findOne({
+            where: {
+                id,
+                isActive: true,
+            },
+        });
+    }
+
+    async updateProfile(id: number, data: UpdateProfileDto): Promise<User | null> {
+
+        await this.repository.update(id, {
+            ...data,
+        });
+
+        return this.findById(id);
     }
 }

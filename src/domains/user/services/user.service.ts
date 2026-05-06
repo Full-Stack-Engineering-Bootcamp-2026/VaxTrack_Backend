@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { UserRepository } from "../repositories/user.repository";
 import { LoggerService } from "../../../common/utils/logger.service";
-import { ForgotPasswordDto, LoginResponseDto, ResetPasswordDto, UserCreateDto, UserLoginDto, UserOutDto } from "../types/user.dto";
+import { ChangePasswordDto, ForgotPasswordDto, LoginResponseDto, ResetPasswordDto, UpdateProfileDto, UserCreateDto, UserLoginDto, UserOutDto } from "../types/user.dto";
 import { BadRequestException, NotFoundException, UnauthorizedException } from "../../../common/exceptions";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -91,5 +91,56 @@ export class UserService {
         await this.repository.updatePassword(user.id, hashedPassword)
 
         await this.emailService.sendPasswordChangedEmail(user.email);
+    }
+
+    public async getProfile(userId: number): Promise<UserOutDto> {
+
+        const user = await this.repository.findById(userId);
+
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+
+        return user;
+    }
+
+    public async updateProfile(userId: number, data: UpdateProfileDto): Promise<UserOutDto> {
+
+        const user = await this.repository.findById(userId);
+
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+
+        const updatedUser = await this.repository.updateProfile(
+            userId,
+            data
+        );
+
+        return updatedUser as UserOutDto;
+    }
+
+    public async changePassword(userId: number, data: ChangePasswordDto): Promise<void> {
+
+        const user = await this.repository.findById(userId);
+
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+
+        const isMatch = await bcrypt.compare(
+            data.currentPassword,
+            user.password
+        );
+
+        if (!isMatch) {
+            throw new UnauthorizedException(
+                "Current password is incorrect"
+            );
+        }
+
+        const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+
+        await this.repository.updatePassword(userId, hashedPassword);
     }
 }

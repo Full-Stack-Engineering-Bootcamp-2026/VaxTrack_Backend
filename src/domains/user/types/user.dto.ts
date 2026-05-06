@@ -34,3 +34,14 @@ export interface ResetPasswordDto {
     token: string;
     password: string;
 }
+
+export interface UpdateProfileDto {
+    fullName?: string;
+    phone?: string;
+    imageUrl?: string;
+}
+
+export interface ChangePasswordDto {
+    currentPassword: string;
+    newPassword: string;
+}

@@ -5,6 +5,7 @@ import { UserCreateDto } from "../types/user.dto";
 import { HttpStatus } from "../../../common/constants/http-status.constants";
 import { SuccessMessages } from "../../../common/constants/success-messages.constants";
 import { generateResponse } from "../../../common/utils/response.util";
+import { AuthRequest } from "../../../common/interfaces/auth-request.interface";
 
 @Service()
 export class UserController {
@@ -44,6 +45,42 @@ export class UserController {
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             message: "Password reset successful",
+        });
+    }
+
+    public async getProfile(req: AuthRequest, res: Response): Promise<Response> {
+        const data = await this.service.getProfile(
+            req.user!.userId
+        );
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            data,
+        });
+    }
+
+    public async updateProfile(req: AuthRequest, res: Response): Promise<Response> {
+        const data = await this.service.updateProfile(
+            req.user!.userId,
+            req.body
+        );
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: SuccessMessages.UPDATED,
+            data,
+        });
+    }
+
+    public async changePassword(req: AuthRequest, res: Response): Promise<Response> {
+        await this.service.changePassword(
+            req.user!.userId,
+            req.body
+        );
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: "Password changed successfully",
         });
     }
 }
