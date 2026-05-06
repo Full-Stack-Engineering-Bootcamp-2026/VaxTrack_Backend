@@ -4,9 +4,9 @@ import { Activity } from "../../activity/entities/activity.entity";
 import { Dependent } from "../../dependant/entities/dependent.entity";
 
 export enum UserRole {
-    GUARDIAN = "guardian",
-    STAFF = "staff",
-    ADMIN = "admin"
+    GUARDIAN = "GUARDIAN",
+    STAFF = "STAFF",
+    ADMIN = "ADMIN",
 }
 
 @Entity()
@@ -26,12 +26,15 @@ export class User {
     @Column({ nullable: true })
     phone: string;
 
+    @Column({ nullable: true })
+    imageUrl: string;
+
     @Column({
         type: "enum",
-        enum: ["GUARDIAN", "STAFF", "ADMIN"],
-        default: "GUARDIAN",
+        enum: UserRole,
+        default: UserRole.GUARDIAN,
     })
-    role: "GUARDIAN" | "STAFF" | "ADMIN";
+    role: UserRole;
 
     @Column({ default: true })
     isActive: boolean;
