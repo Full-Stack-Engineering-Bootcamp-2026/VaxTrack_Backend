@@ -45,12 +45,16 @@ export class UserService {
             throw new UnauthorizedException("Invalid password");
         const token = jwt.sign({
             userId: user.id,
-            email: user.email
+            email: user.email,
+            role: user.role
         },
             process.env.JWT_SECRET as string,
             { expiresIn: "1d" }
         )
-        return { token };
+        return {
+            accessToken: token,
+            tokenType: "Bearer",
+        };
     }
 
     public async forgotPassword(data: ForgotPasswordDto): Promise<void> {

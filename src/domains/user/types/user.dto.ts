@@ -21,7 +21,8 @@ export interface UserLoginDto {
 }
 
 export interface LoginResponseDto {
-    token: string
+    accessToken: string;
+    tokenType: string;
 }
 
 export interface ForgotPasswordDto {
