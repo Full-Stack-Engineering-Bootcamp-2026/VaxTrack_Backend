@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { UserRepository } from "../repositories/user.repository";
 import { LoggerService } from "../../../common/utils/logger.service";
-import { ForgotPasswordDto, LoginResponseDto, UserCreateDto, UserLoginDto, UserOutDto } from "../types/user.dto";
+import { ForgotPasswordDto, LoginResponseDto, ResetPasswordDto, UserCreateDto, UserLoginDto, UserOutDto } from "../types/user.dto";
 import { BadRequestException, NotFoundException, UnauthorizedException } from "../../../common/exceptions";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -64,10 +64,28 @@ export class UserService {
 
         const expiry = new Date(Date.now() + 15 * 60 * 1000);
 
-        await this.repository.updateResetToken(user.id,token,expiry);
+        await this.repository.updateResetToken(user.id, token, expiry);
 
         const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`
 
-        await this.emailService.sendResetPasswordEmail(user.email,resetLink)
+        await this.emailService.sendResetPasswordEmail(user.email, resetLink)
+    }
+
+    public async resetPassword(data: ResetPasswordDto): Promise<void> {
+        const user = await this.repository.findByResetToken(data.token);
+
+        if (!user) {
+            throw new NotFoundException("User with this token not found");
+        }
+
+        if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+            throw new BadRequestException("Token expired");
+        }
+
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+
+        await this.repository.updatePassword(user.id, hashedPassword)
+
+        await this.emailService.sendPasswordChangedEmail(user.email);
     }
 }

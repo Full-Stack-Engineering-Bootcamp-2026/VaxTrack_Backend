@@ -27,11 +27,24 @@ export class EmailService {
                 <p>You requested to reset your password.</p>
                 <p>Click the button below to reset it:</p>
                 <a href="${resetLink}" 
-                style="display:inline-block;padding:10px 20px;background:#007bff;color:#fff;text-decoration:none;border-radius:5px;">
+                style="display:inline-block;padding:10px 20px;background:#7C3AED;color:#fff;text-decoration:none;border-radius:5px;">
                 Reset Password
                 </a>
                 <p>This link will expire in 15 minutes.</p>
                 <p>If you didn’t request this, please ignore this email.</p>
+            </div>
+    `;
+
+        await this.sendEmail(email, subject, html);
+    }
+
+    public async sendPasswordChangedEmail(email: string): Promise<void> {
+        const subject = "Password Updated Successfully";
+
+        const html = `
+            <div style="font-family: Arial, sans-serif;">
+                <h2>Password Updated</h2>
+                <p>Your password has been successfully changed.</p>
             </div>
     `;
 

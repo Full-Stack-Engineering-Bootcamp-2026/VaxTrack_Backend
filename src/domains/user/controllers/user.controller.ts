@@ -29,12 +29,21 @@ export class UserController {
         });
     }
 
-    public async forgotPassword(req:Request,res:Response):Promise<Response>{
+    public async forgotPassword(req: Request, res: Response): Promise<Response> {
         await this.service.forgotPassword(req.body);
 
-        return generateResponse(res,{
-            statusCode:HttpStatus.OK,
-            message:`Reset Password email sent to ${req.body.email}`
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: `Reset Password email sent to ${req.body.email}`
         })
+    }
+
+    public async resetPassword(req: Request, res: Response): Promise<Response> {
+        await this.service.resetPassword(req.body);
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: "Password reset successful",
+        });
     }
 }

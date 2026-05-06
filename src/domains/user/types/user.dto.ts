@@ -24,6 +24,11 @@ export interface LoginResponseDto {
     token: string
 }
 
-export interface ForgotPasswordDto{
-    email:string;
+export interface ForgotPasswordDto {
+    email: string;
+}
+
+export interface ResetPasswordDto {
+    token: string;
+    password: string;
 }
