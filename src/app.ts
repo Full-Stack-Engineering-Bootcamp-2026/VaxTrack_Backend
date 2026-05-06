@@ -7,6 +7,8 @@ import { AppDataSource } from "./db/db";
 import { success, failure } from "./Http_Response/response";
 import Container from "typedi";
 import { UserRoutes } from "./domains/user/routes/user.routes";
+import { errorHandler, notFoundHandler } from "./common/middleware/error-handler.middleware";
+import { VaccineRoutes } from "./domains/vaccine/routes/vaccine.routes";
 
 dotenv.config();
 
@@ -50,8 +52,12 @@ class Application {
     });
 
     const userRoutes = Container.get(UserRoutes)
+    const vaccineRoutes = Container.get(VaccineRoutes)
 
-    this.app.use("/api/users",userRoutes.getRoutes())
+    this.app.use("/api/users", userRoutes.getRoutes())
+    this.app.use("/api/vaccines", vaccineRoutes.getRoutes())
+    this.app.use(notFoundHandler);
+    this.app.use(errorHandler);
   }
 
   private async connectDatabase(): Promise<void> {

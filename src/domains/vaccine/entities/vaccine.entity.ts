@@ -3,8 +3,8 @@ import { VaccinationRecord } from "../../vaccination-record/entities/vaccination
 
 @Entity()
 export class Vaccine {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @Column()
     name: string;
