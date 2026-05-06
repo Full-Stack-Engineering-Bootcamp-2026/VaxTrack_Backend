@@ -28,4 +28,13 @@ export class UserController {
             data,
         });
     }
+
+    public async forgotPassword(req:Request,res:Response):Promise<Response>{
+        await this.service.forgotPassword(req.body);
+
+        return generateResponse(res,{
+            statusCode:HttpStatus.OK,
+            message:`Reset Password email sent to ${req.body.email}`
+        })
+    }
 }

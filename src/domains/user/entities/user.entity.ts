@@ -47,4 +47,10 @@ export class User {
 
     @OneToMany(() => Activity, (activity) => activity.user)
     activities: Activity[];
+
+    @Column({ nullable: true })
+    resetToken: string;
+
+    @Column({ type: 'datetime', nullable: true })
+    resetTokenExpiry: Date;
 }

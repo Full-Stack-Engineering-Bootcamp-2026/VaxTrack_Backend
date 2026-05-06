@@ -23,3 +23,7 @@ export interface UserLoginDto {
 export interface LoginResponseDto {
     token: string
 }
+
+export interface ForgotPasswordDto{
+    email:string;
+}

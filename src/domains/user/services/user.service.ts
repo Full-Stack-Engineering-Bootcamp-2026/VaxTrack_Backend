@@ -1,16 +1,20 @@
 import { Service } from "typedi";
 import { UserRepository } from "../repositories/user.repository";
 import { LoggerService } from "../../../common/utils/logger.service";
-import { LoginResponseDto, UserCreateDto, UserLoginDto, UserOutDto } from "../types/user.dto";
+import { ForgotPasswordDto, LoginResponseDto, UserCreateDto, UserLoginDto, UserOutDto } from "../types/user.dto";
 import { BadRequestException, NotFoundException, UnauthorizedException } from "../../../common/exceptions";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { EmailService } from "../../../common/utils/email-service";
+import crypto from "crypto";
 
 @Service()
 export class UserService {
     constructor(
         private readonly repository: UserRepository,
-        private readonly logger: LoggerService
+        private readonly logger: LoggerService,
+        private readonly emailService: EmailService
+
     ) { }
 
     public async register(data: UserCreateDto): Promise<UserOutDto> {
@@ -47,5 +51,23 @@ export class UserService {
             { expiresIn: "1d" }
         )
         return { token };
+    }
+
+    public async forgotPassword(data: ForgotPasswordDto): Promise<void> {
+        const user = await this.repository.findByEmail(data.email);
+
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+
+        const token = crypto.randomBytes(32).toString("hex");
+
+        const expiry = new Date(Date.now() + 15 * 60 * 1000);
+
+        await this.repository.updateResetToken(user.id,token,expiry);
+
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`
+
+        await this.emailService.sendResetPasswordEmail(user.email,resetLink)
     }
 }
