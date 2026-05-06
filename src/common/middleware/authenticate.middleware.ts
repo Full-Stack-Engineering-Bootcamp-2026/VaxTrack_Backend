@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { HttpStatus } from "../constants/http-status.constants";
 import { AuthErrorMessages } from "../constants/auth-error-messages.constants";
 import { UserRole } from "../../domains/user/entities/user.entity";
+import { AuthRequest } from "../interfaces/auth-request.interface";
 
 /**
  * =============================================================================
@@ -22,7 +23,7 @@ import { UserRole } from "../../domains/user/entities/user.entity";
  * =============================================================================
  */
 export const authenticate = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
