@@ -6,6 +6,7 @@ export interface UserOutDto {
     role: "GUARDIAN" | "STAFF" | "ADMIN";
     isActive: boolean;
     createdAt: Date;
+    imageUrl?: string;
 }
 
 export interface UserCreateDto {
