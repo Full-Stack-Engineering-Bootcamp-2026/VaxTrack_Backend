@@ -24,4 +24,23 @@ export class UserRepository {
         });
         return this.repository.save(user);
     }
+
+    async findByResetToken(token: string): Promise<User | null> {
+        return this.repository.findOne({ where: { resetToken: token } })
+    }
+
+    async updateResetToken(id: number, token: string, expiry: Date): Promise<void> {
+        await this.repository.update(id, {
+            resetToken: token,
+            resetTokenExpiry: expiry,
+        });
+    }
+
+    async updatePassword(id: number, password: string): Promise<void> {
+        await this.repository.update(id, {
+            password,
+            resetToken: '',
+            resetTokenExpiry: '',
+        });
+    }
 }

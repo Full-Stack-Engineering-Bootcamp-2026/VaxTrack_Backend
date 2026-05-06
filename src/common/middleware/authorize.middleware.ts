@@ -5,6 +5,7 @@ import {
   getAccessDeniedMessage,
   getAllRolesRequiredMessage,
 } from "../constants/auth-error-messages.constants";
+import { UserRole } from "../../domains/user/entities/user.entity";
 
 /**
  * =============================================================================
@@ -29,7 +30,7 @@ import {
  * User must have at least ONE of the specified roles
  * router.post('/reports', authenticate, requireRole('ADMIN', 'MANAGER'), handler);
  */
-export const requireRole = (...roles: string[]) => {
+export const requireRole = (...roles: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       res.status(HttpStatus.UNAUTHORIZED).json({
@@ -40,8 +41,7 @@ export const requireRole = (...roles: string[]) => {
       return;
     }
 
-    const userRoles = req.user.roles || [];
-    const hasRequiredRole = roles.some((role) => userRoles.includes(role));
+    const hasRequiredRole = roles.includes(req.user.role);
 
     if (!hasRequiredRole) {
       res.status(HttpStatus.FORBIDDEN).json({
@@ -66,29 +66,29 @@ export const requireRole = (...roles: string[]) => {
  * User must have ALL specified roles
  * router.post('/audit-log', authenticate, requireAllRoles('ADMIN', 'AUDITOR'), handler);
  */
-export const requireAllRoles = (...roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    if (!req.user) {
-      res.status(HttpStatus.UNAUTHORIZED).json({
-        status: HttpStatus.UNAUTHORIZED,
-        message: AuthErrorMessages.AUTHENTICATION_REQUIRED,
-        error: AuthErrorMessages.UNAUTHORIZED,
-      });
-      return;
-    }
+// export const requireAllRoles = (...roles: string[]) => {
+//   return (req: Request, res: Response, next: NextFunction): void => {
+//     if (!req.user) {
+//       res.status(HttpStatus.UNAUTHORIZED).json({
+//         status: HttpStatus.UNAUTHORIZED,
+//         message: AuthErrorMessages.AUTHENTICATION_REQUIRED,
+//         error: AuthErrorMessages.UNAUTHORIZED,
+//       });
+//       return;
+//     }
 
-    const userRoles = req.user.roles || [];
-    const hasAllRoles = roles.every((role) => userRoles.includes(role));
+//     const userRoles = req.user.roles || [];
+//     const hasAllRoles = roles.every((role) => userRoles.includes(role));
 
-    if (!hasAllRoles) {
-      res.status(HttpStatus.FORBIDDEN).json({
-        status: HttpStatus.FORBIDDEN,
-        message: getAllRolesRequiredMessage(roles),
-        error: AuthErrorMessages.FORBIDDEN,
-      });
-      return;
-    }
+//     if (!hasAllRoles) {
+//       res.status(HttpStatus.FORBIDDEN).json({
+//         status: HttpStatus.FORBIDDEN,
+//         message: getAllRolesRequiredMessage(roles),
+//         error: AuthErrorMessages.FORBIDDEN,
+//       });
+//       return;
+//     }
 
-    next();
-  };
-};
+//     next();
+//   };
+// };

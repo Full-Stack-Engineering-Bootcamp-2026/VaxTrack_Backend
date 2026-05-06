@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { HttpStatus } from "../constants/http-status.constants";
 import { AuthErrorMessages } from "../constants/auth-error-messages.constants";
+import { UserRole } from "../../domains/user/entities/user.entity";
 
 /**
  * =============================================================================
@@ -56,9 +57,9 @@ export const authenticate = async (
     }
 
     let payload: {
-      userId: string;
-      email: string;
-      roles: string[];
+      userId: number,
+      email: string,
+      role: UserRole;
     };
 
     try {
@@ -76,7 +77,7 @@ export const authenticate = async (
     req.user = {
       userId: payload.userId,
       email: payload.email,
-      roles: payload.roles ?? [],
+      role: payload.role,
     };
 
     next();
