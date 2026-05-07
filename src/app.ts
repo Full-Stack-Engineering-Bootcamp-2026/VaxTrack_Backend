@@ -62,7 +62,7 @@ class Application {
 
     this.app.use("/api/users", userRoutes.getRoutes())
     this.app.use("/api/vaccines", authenticate, requireRole(UserRole.ADMIN, UserRole.STAFF), vaccineRoutes.getRoutes())
-    this.app.use("/api/vaccination-record",authenticate,vaccinationRecordRoutes.getRoutes());
+    this.app.use("/api/vaccination-record", authenticate, vaccinationRecordRoutes.getRoutes());
     this.app.use(notFoundHandler);
     this.app.use(errorHandler);
   }
