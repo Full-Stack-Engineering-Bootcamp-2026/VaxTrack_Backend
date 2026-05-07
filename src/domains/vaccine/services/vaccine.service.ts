@@ -2,6 +2,7 @@ import { Service } from "typedi";
 import { VaccineRepository } from "../repositories/vaccine.repository";
 import { VaccineCreateDto } from "../types/vaccine.dto";
 import { Vaccine } from "../entities/vaccine.entity";
+import { NotFoundException } from "../../../common/exceptions";
 
 @Service()
 export class VaccineService {
@@ -15,6 +16,10 @@ export class VaccineService {
         return this.repo.findAll();
     }
 
+    async findAllActive(): Promise<Vaccine[]> {
+        return this.repo.findAllActive();
+    }
+
     async find(id: number): Promise<Vaccine | null> {
         return this.repo.find(id);
     }
@@ -23,7 +28,11 @@ export class VaccineService {
         return this.repo.update(id, data);
     }
 
-    async delete(id: number) {
-        return this.repo.delete(id);
+    async disable(id: number) {
+        const vaccine = await this.repo.find(id);
+        if (!vaccine)
+            throw new NotFoundException("Vaccine not found");
+        return this.repo.disable(id);
     }
+
 }

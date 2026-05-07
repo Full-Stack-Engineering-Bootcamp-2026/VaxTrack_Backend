@@ -9,6 +9,9 @@ import Container from "typedi";
 import { UserRoutes } from "./domains/user/routes/user.routes";
 import { errorHandler, notFoundHandler } from "./common/middleware/error-handler.middleware";
 import { VaccineRoutes } from "./domains/vaccine/routes/vaccine.routes";
+import { authenticate } from "./common/middleware/authenticate.middleware";
+import { requireRole } from "./common/middleware/authorize.middleware";
+import { UserRole } from "./domains/user/entities/user.entity";
 
 dotenv.config();
 
@@ -55,7 +58,7 @@ class Application {
     const vaccineRoutes = Container.get(VaccineRoutes)
 
     this.app.use("/api/users", userRoutes.getRoutes())
-    this.app.use("/api/vaccines", vaccineRoutes.getRoutes())
+    this.app.use("/api/vaccines", authenticate, requireRole(UserRole.ADMIN, UserRole.STAFF), vaccineRoutes.getRoutes())
     this.app.use(notFoundHandler);
     this.app.use(errorHandler);
   }
