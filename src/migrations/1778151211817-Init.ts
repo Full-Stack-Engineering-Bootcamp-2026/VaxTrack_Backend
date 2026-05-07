@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1778147896946 implements MigrationInterface {
-    name = 'Init1778147896946'
+export class Init1778151211817 implements MigrationInterface {
+    name = 'Init1778151211817'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE \`activity\` (\`id\` varchar(36) NOT NULL, \`action\` varchar(255) NOT NULL, \`description\` text NULL, \`entityType\` varchar(255) NULL, \`entityId\` varchar(255) NULL, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`userId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`activity\` (\`id\` int NOT NULL AUTO_INCREMENT, \`action\` enum ('USER_REGISTERED', 'DEPENDENT_CREATED', 'VACCINATION_RECORDED', 'PASSWORD_RESET') NOT NULL, \`description\` text NULL, \`entityType\` varchar(255) NULL, \`entityId\` varchar(255) NULL, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`userId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`dependent\` (\`id\` int NOT NULL AUTO_INCREMENT, \`fullName\` varchar(255) NOT NULL, \`dateOfBirth\` date NOT NULL, \`gender\` enum ('male', 'female') NOT NULL, \`relationship\` enum ('child', 'sibling', 'other') NOT NULL, \`notes\` varchar(255) NOT NULL, \`isActive\` tinyint NOT NULL DEFAULT 1, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`guardianId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`user\` (\`id\` int NOT NULL AUTO_INCREMENT, \`fullName\` varchar(255) NOT NULL, \`email\` varchar(255) NOT NULL, \`password\` varchar(255) NOT NULL, \`phone\` varchar(255) NULL, \`imageUrl\` varchar(255) NULL, \`role\` enum ('GUARDIAN', 'STAFF', 'ADMIN') NOT NULL DEFAULT 'GUARDIAN', \`isActive\` tinyint NOT NULL DEFAULT 1, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`resetToken\` varchar(255) NULL, \`resetTokenExpiry\` datetime NULL, UNIQUE INDEX \`IDX_e12875dfb3b1d92d7d7c5377e2\` (\`email\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`vaccination_record\` (\`id\` int NOT NULL AUTO_INCREMENT, \`dueDate\` date NOT NULL, \`administeredDate\` date NULL, \`batchNumber\` varchar(255) NULL, \`clinicalNotes\` varchar(255) NULL, \`status\` enum ('COMPLETED', 'UPCOMING', 'OVERDUE') NOT NULL DEFAULT 'UPCOMING', \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`dependentId\` int NULL, \`vaccineId\` int NULL, \`administeredById\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);

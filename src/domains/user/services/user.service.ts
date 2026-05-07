@@ -54,6 +54,16 @@ export class UserService {
         return {
             accessToken: token,
             tokenType: "Bearer",
+            user: {
+                id: user.id,
+                fullName: user.fullName,
+                email: user.email,
+                phone: user.phone,
+                imageUrl: user.imageUrl,
+                role: user.role,
+                isActive: user.isActive,
+                createdAt: user.createdAt,
+            }
         };
     }
 
