@@ -3,28 +3,38 @@ import { User } from "../../user/entities/user.entity";
 import { Vaccine } from "../../vaccine/entities/vaccine.entity";
 import { Dependent } from "../../dependant/entities/dependent.entity";
 
-export enum Status {
+export enum status {
     COMPLETED = "COMPLETED",
     UPCOMING = "UPCOMING",
-    OVERDUE = "OVERDUE"
+    OVERDUE = "OVERDUE",
 }
 @Entity()
 export class VaccinationRecord {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-    @ManyToOne(() => Dependent, (dep) => dep.vaccinationRecords, {
-        onDelete: "CASCADE",
-    })
+    @ManyToOne(
+        () => Dependent,
+        (dependent) => dependent.vaccinationRecords,
+        {
+            onDelete: "CASCADE",
+        }
+    )
     dependent: Dependent;
 
-    @ManyToOne(() => Vaccine, (vaccine) => vaccine.records)
+    @ManyToOne(
+        () => Vaccine,
+        (vaccine) => vaccine.records
+    )
     vaccine: Vaccine;
 
-    @ManyToOne(() => User)
-    administeredBy: User;
+    @Column({ type: "date" })
+    dueDate: Date;
 
-    @Column({ type: "date", nullable: true })
+    @Column({
+        type: "date",
+        nullable: true,
+    })
     administeredDate: Date;
 
     @Column({ nullable: true })
@@ -35,13 +45,15 @@ export class VaccinationRecord {
 
     @Column({
         type: "enum",
-        enum: Status,
-        default: "UPCOMING",
+        enum: status,
+        default: status.UPCOMING,
     })
-    status: Status
+    status: status;
 
-    @Column({ type: "date" })
-    dueDate: Date;
+    @ManyToOne(() => User, {
+        nullable: true,
+    })
+    administeredBy: User;
 
     @CreateDateColumn()
     createdAt: Date;

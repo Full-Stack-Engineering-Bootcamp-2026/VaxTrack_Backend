@@ -12,6 +12,8 @@ import { VaccineRoutes } from "./domains/vaccine/routes/vaccine.routes";
 import { authenticate } from "./common/middleware/authenticate.middleware";
 import { requireRole } from "./common/middleware/authorize.middleware";
 import { UserRole } from "./domains/user/entities/user.entity";
+import { VaccinationRecord } from "./domains/vaccination-record/entities/vaccination-record.entity";
+import { VaccinationRecordRoutes } from "./domains/vaccination-record/routes/vaccination-record.routes";
 
 dotenv.config();
 
@@ -56,9 +58,11 @@ class Application {
 
     const userRoutes = Container.get(UserRoutes)
     const vaccineRoutes = Container.get(VaccineRoutes)
+    const vaccinationRecordRoutes = Container.get(VaccinationRecordRoutes);
 
     this.app.use("/api/users", userRoutes.getRoutes())
     this.app.use("/api/vaccines", authenticate, requireRole(UserRole.ADMIN, UserRole.STAFF), vaccineRoutes.getRoutes())
+    this.app.use("/api/vaccination-record",authenticate,vaccinationRecordRoutes.getRoutes());
     this.app.use(notFoundHandler);
     this.app.use(errorHandler);
   }

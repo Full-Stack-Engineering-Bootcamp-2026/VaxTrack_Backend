@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { VaccinationRecord } from "../../vaccination-record/entities/vaccinationRecord.enity";
+import { VaccinationRecord } from "../../vaccination-record/entities/vaccination-record.entity";
 import { User } from "../../user/entities/user.entity";
 
 export enum Gender {
