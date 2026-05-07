@@ -121,9 +121,11 @@ export class VaccinationRecordRepository {
                 dueDate: "ASC"
             }
         });
+    }
     async createMany(records: Partial<VaccinationRecord>[]): Promise<VaccinationRecord[]> {
         const vaccinationRecords = this.repository.create(records);
 
         return this.repository.save(vaccinationRecords);
     }
+
 }
