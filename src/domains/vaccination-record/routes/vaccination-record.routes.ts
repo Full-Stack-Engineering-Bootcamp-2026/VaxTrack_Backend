@@ -56,9 +56,29 @@ export class VaccinationRecordRoutes {
             asyncHandler(this.controller.update.bind(this.controller))
         );
 
+        this.router.get(
+            "/upcoming",
+            authenticate,
+            asyncHandler(this.controller.getUpcomingVaccines.bind(this.controller))
+        );
 
+        this.router.get(
+            "/overdue",
+            authenticate,
+            asyncHandler(this.controller.getOverdueVaccines.bind(this.controller))
+        );
 
+        this.router.get(
+            "/compliance",
+            authenticate,
+            asyncHandler(this.controller.getCompliance.bind(this.controller))
+        );
 
+        this.router.get(
+            "/status-breakdown",
+            authenticate,
+            asyncHandler(this.controller.getStatusBreakdown.bind(this.controller))
+        );
     }
 
 

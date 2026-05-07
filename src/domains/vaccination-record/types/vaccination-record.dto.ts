@@ -19,3 +19,13 @@ export interface VaccinationRecordOutDto {
     status: string;
     createdAt: Date;
 }
+
+export interface ComplianceDto {
+    compliancePercentage: number;
+}
+
+export interface StatusBreakdownDto {
+    completed: number;
+    upcoming: number;
+    overdue: number;
+}

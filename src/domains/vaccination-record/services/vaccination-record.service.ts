@@ -4,6 +4,7 @@ import { LoggerService } from "../../../common/utils/logger.service";
 import { status } from "../entities/vaccination-record.entity";
 import { RecordVaccinationDto, UpdateVaccinationDto, VaccinationRecordOutDto } from "../types/vaccination-record.dto";
 import { NotFoundException } from "../../../common/exceptions";
+import { number } from "joi";
 
 @Service()
 export class VaccinationRecordService {
@@ -58,5 +59,33 @@ export class VaccinationRecordService {
         for (const vaccine of overdueVaccines) {
             await this.repository.update(vaccine.id, { status: status.OVERDUE });
         }
+    }
+
+    public async getCompliance(guardianId?: number) {
+        const completed = await this.repository.countCompleted(guardianId);
+        const upcoming = await this.repository.countUpcoming(guardianId);
+        const overdue = await this.repository.countOverdue(guardianId);
+        const total = completed + upcoming + overdue;
+
+        let compliancePercentage = 0;
+        if (total > 0) {
+            compliancePercentage = Math.round((completed / total) * 100);
+        }
+        return { compliancePercentage };
+    }
+
+    public async getStatusBreakdown(guardianId?: number) {
+        const completed = await this.repository.countCompleted(guardianId);
+        const upcoming = await this.repository.countUpcoming(guardianId);
+        const overdue = await this.repository.countOverdue(guardianId);
+        return { completed, upcoming, overdue };
+    }
+
+    public async getUpcomingVaccines(guardianId?: number) {
+        return this.repository.findUpcomingVaccines(guardianId);
+    }
+
+    public async getOverdueVaccines(guardianId?: number) {
+        return this.repository.findOverdueVaccines(guardianId);
     }
 }

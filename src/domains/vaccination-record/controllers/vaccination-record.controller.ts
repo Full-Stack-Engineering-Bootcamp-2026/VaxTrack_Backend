@@ -5,6 +5,7 @@ import { AuthRequest } from "../../../common/interfaces/auth-request.interface";
 import { VaccinationRecordService } from "../services/vaccination-record.service";
 import { Response } from "express";
 import { generateResponse } from "../../../common/utils/response.util";
+import { UserRole } from "../../user/entities/user.entity";
 
 @Service()
 export class VaccinationRecordController {
@@ -87,4 +88,55 @@ export class VaccinationRecordController {
             message: "Overdue vaccines updated successfully",
         });
     }
+
+    public async getCompliance(
+        req: AuthRequest,
+        res: Response
+    ): Promise<Response> {
+
+        let guardianId = undefined;
+        if (req.user!.role === UserRole.GUARDIAN) {
+            guardianId = req.user!.userId;
+        }
+
+        const data = await this.service.getCompliance(guardianId);
+        return generateResponse(res, { statusCode: HttpStatus.OK, data });
+    }
+
+    public async getStatusBreakdown(req: AuthRequest, res: Response): Promise<Response> {
+        let guardianId = undefined;
+        if (req.user!.role === UserRole.GUARDIAN) {
+            guardianId = req.user!.userId;
+        }
+        const data = await this.service.getStatusBreakdown(guardianId);
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            data,
+        });
+    }
+
+    public async getUpcomingVaccines(req: AuthRequest, res: Response): Promise<Response> {
+        let guardianId = undefined;
+        if (req.user!.role === UserRole.GUARDIAN) {
+            guardianId = req.user!.userId;
+        }
+        const data = await this.service.getUpcomingVaccines(guardianId);
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            data,
+        });
+    }
+
+    public async getOverdueVaccines(req: AuthRequest, res: Response): Promise<Response> {
+        let guardianId = undefined;
+        if (req.user!.role === UserRole.GUARDIAN) {
+            guardianId = req.user!.userId;
+        }
+        const data = await this.service.getOverdueVaccines(guardianId);
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            data,
+        });
+    }
+
 }
