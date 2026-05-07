@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { VaccinationRecord } from "../../vaccination-record/entities/vaccinationRecord.enity";
+import { VaccinationRecord } from "../../vaccination-record/entities/vaccination-record.entity";
 import { Activity } from "../../activity/entities/activity.entity";
 import { Dependent } from "../../dependant/entities/dependent.entity";
 
