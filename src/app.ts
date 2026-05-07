@@ -5,6 +5,13 @@ import "reflect-metadata";
 
 import { AppDataSource } from "./db/db";
 import { success, failure } from "./Http_Response/response";
+import Container from "typedi";
+import { UserRoutes } from "./domains/user/routes/user.routes";
+import { errorHandler, notFoundHandler } from "./common/middleware/error-handler.middleware";
+import { VaccineRoutes } from "./domains/vaccine/routes/vaccine.routes";
+import { authenticate } from "./common/middleware/authenticate.middleware";
+import { requireRole } from "./common/middleware/authorize.middleware";
+import { UserRole } from "./domains/user/entities/user.entity";
 
 dotenv.config();
 
@@ -46,6 +53,14 @@ class Application {
     this.app.get("/", (_req: Request, res: Response) => {
       return res.json(success(null, "Server is running"));
     });
+
+    const userRoutes = Container.get(UserRoutes)
+    const vaccineRoutes = Container.get(VaccineRoutes)
+
+    this.app.use("/api/users", userRoutes.getRoutes())
+    this.app.use("/api/vaccines", authenticate, requireRole(UserRole.ADMIN, UserRole.STAFF), vaccineRoutes.getRoutes())
+    this.app.use(notFoundHandler);
+    this.app.use(errorHandler);
   }
 
   private async connectDatabase(): Promise<void> {

@@ -1,5 +1,6 @@
 export const SuccessMessages = {
   CREATED: "Created successfully",
+  LOGIN: "Logged in successfully",
   UPDATED: "Updated successfully",
   DELETED: "Deleted successfully",
   SERVER_RUNNING: "Server is running",
