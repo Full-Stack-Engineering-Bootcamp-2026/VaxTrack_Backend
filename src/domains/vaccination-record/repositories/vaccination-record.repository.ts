@@ -35,4 +35,9 @@ export class VaccinationRecordRepository {
     async findOverDueVaccines(): Promise<VaccinationRecord[]> {
         return this.repository.find({ where: { dueDate: LessThan(new Date()), status: Not(status.COMPLETED) } });
     }
+    async createMany(records: Partial<VaccinationRecord>[]): Promise<VaccinationRecord[]> {
+        const vaccinationRecords = this.repository.create(records);
+
+        return this.repository.save(vaccinationRecords);
+    }
 }
