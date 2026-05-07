@@ -16,7 +16,7 @@ export class Vaccine {
     description: string;
 
     @Column()
-    recommendedAge: string;
+    recommendedAgeInDays: number;
 
     @Column({ nullable: true })
     boosterSchedule: string;

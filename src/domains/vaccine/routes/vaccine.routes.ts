@@ -31,6 +31,11 @@ export class VaccineRoutes {
         );
 
         this.router.get(
+            "/active",
+            asyncHandler(this.controller.findAllActive.bind(this.controller))
+        )
+
+        this.router.get(
             "/:id",
             asyncHandler(this.controller.find.bind(this.controller))
         );
@@ -41,9 +46,9 @@ export class VaccineRoutes {
             asyncHandler(this.controller.update.bind(this.controller))
         );
 
-        this.router.delete(
+        this.router.patch(
             "/:id",
-            asyncHandler(this.controller.delete.bind(this.controller))
+            asyncHandler(this.controller.disable.bind(this.controller))
         );
     }
 }

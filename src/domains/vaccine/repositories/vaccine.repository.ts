@@ -21,8 +21,11 @@ export class VaccineRepository {
         return this.repository.find();
     }
 
+    async findAllActive(): Promise<Vaccine[]> {
+        return this.repository.find({ where: { isActive: true } });
+    }
     async find(id: number): Promise<Vaccine | null> {
-        return this.repository.findOne({where:{id}});
+        return this.repository.findOne({ where: { id } });
     }
 
     async update(id: number, data: Partial<VaccineCreateDto>): Promise<Vaccine> {
@@ -33,7 +36,11 @@ export class VaccineRepository {
         return updated;
     }
 
-    async delete(id: Number): Promise<void> {
-        return await this.delete(id);
+    async disable(id: number): Promise<boolean> {
+        const result = await this.repository.update(id, {
+            isActive: false,
+        })
+
+        return (result.affected ?? 0) > 0;
     }
 }
