@@ -14,11 +14,14 @@ export enum Relationship {
 
 @Entity()
 export class Dependent {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @Column()
     fullName: string;
+
+    @Column({ type: "date" })
+    dateOfBirth: Date;
 
     @Column({ type: 'enum', enum: Gender })
     gender: Gender;
@@ -28,6 +31,9 @@ export class Dependent {
 
     @Column()
     notes: string;
+
+    @Column({ default: true })
+    isActive: boolean;
 
     @ManyToOne(() => User, (user) => user.dependents, {
         onDelete: "CASCADE",
