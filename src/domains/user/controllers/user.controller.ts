@@ -6,10 +6,12 @@ import { HttpStatus } from "../../../common/constants/http-status.constants";
 import { SuccessMessages } from "../../../common/constants/success-messages.constants";
 import { generateResponse } from "../../../common/utils/response.util";
 import { AuthRequest } from "../../../common/interfaces/auth-request.interface";
+import { B2Service } from "../../../common/utils/b2.service";
+import { BadRequestException } from "../../../common/exceptions";
 
 @Service()
 export class UserController {
-    constructor(private readonly service: UserService) { }
+    constructor(private readonly service: UserService, private readonly b2Service: B2Service) { }
 
     public async register(req: Request, res: Response): Promise<Response> {
         const data = await this.service.register(req.body as UserCreateDto);
@@ -101,6 +103,37 @@ export class UserController {
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             message: "Logged out successfully",
+        });
+    }
+
+    public async uploadProfileTemp(req: AuthRequest, res: Response): Promise<Response> {
+
+        if (!req.file) {
+            throw new BadRequestException(
+                "Image file is required"
+            );
+        }
+
+        const data = await this.b2Service
+            .uploadTempProfileImage(
+                req.file
+            );
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            data,
+        });
+    }
+
+    public async deleteTempFile(req: AuthRequest, res: Response): Promise<Response> {
+
+        await this.b2Service.deleteFile(
+            req.body.fileName
+        );
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: "Temp file deleted",
         });
     }
 }

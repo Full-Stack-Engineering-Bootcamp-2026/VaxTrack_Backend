@@ -10,6 +10,7 @@ import crypto from "crypto";
 import { User, UserRole } from "../entities/user.entity";
 import { ActivityService } from "../../activity/services/activity.service";
 import { ActivityAction } from "../../activity/entities/activity.entity";
+import { B2Service } from "../../../common/utils/b2.service";
 
 @Service()
 export class UserService {
@@ -18,7 +19,7 @@ export class UserService {
         private readonly logger: LoggerService,
         private readonly emailService: EmailService,
         private readonly activityService: ActivityService,
-
+        private readonly b2Service: B2Service
     ) { }
 
     public async register(data: UserCreateDto): Promise<void> {
@@ -186,6 +187,25 @@ export class UserService {
         }
         this.logger.info(`Updating profile for user: ${user.id}`);
 
+        if (
+            user.imageUrl &&
+            data.imageUrl &&
+            user.imageUrl !== data.imageUrl
+        ) {
+
+            const oldFileName =
+                user.imageUrl.split(
+                    `${process.env.B2_BUCKET_NAME}/`
+                )[1];
+
+            if (oldFileName) {
+
+                await this.b2Service.deleteFile(
+                    oldFileName
+                );
+            }
+        }
+
         const updatedUser = await this.repository.updateProfile(
             userId,
             data
@@ -245,7 +265,7 @@ export class UserService {
         );
     }
 
-    public async createStaff(adminId:number,data: CreateStaffDto): Promise<void> {
+    public async createStaff(adminId: number, data: CreateStaffDto): Promise<void> {
 
         const existing = await this.repository.findByEmail(
             data.email
@@ -269,7 +289,7 @@ export class UserService {
             isActive: true,
         });
 
-        
+
         await this.activityService.logActivity(
             ActivityAction.STAFF_CREATED,
             Number(adminId),
