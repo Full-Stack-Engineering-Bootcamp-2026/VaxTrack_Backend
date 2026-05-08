@@ -26,7 +26,7 @@ export class User {
     @Column({ nullable: true })
     phone: string;
 
-    @Column({ nullable: true })
+    @Column({ length:10000,nullable: true })
     imageUrl: string;
 
     @Column({

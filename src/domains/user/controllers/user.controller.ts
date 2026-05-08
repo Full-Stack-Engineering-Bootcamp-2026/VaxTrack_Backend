@@ -6,12 +6,15 @@ import { HttpStatus } from "../../../common/constants/http-status.constants";
 import { SuccessMessages } from "../../../common/constants/success-messages.constants";
 import { generateResponse } from "../../../common/utils/response.util";
 import { AuthRequest } from "../../../common/interfaces/auth-request.interface";
-import { B2Service } from "../../../common/utils/b2.service";
 import { BadRequestException } from "../../../common/exceptions";
+import { StorageService } from "../../../common/utils/storage.service";
 
 @Service()
 export class UserController {
-    constructor(private readonly service: UserService, private readonly b2Service: B2Service) { }
+    constructor(
+        private readonly service: UserService,
+        private readonly storageService: StorageService
+    ) { }
 
     public async register(req: Request, res: Response): Promise<Response> {
         const data = await this.service.register(req.body as UserCreateDto);
@@ -114,20 +117,27 @@ export class UserController {
             );
         }
 
-        const data = await this.b2Service
-            .uploadTempProfileImage(
-                req.file
-            );
+        const fileName = `temp/profile/${Date.now()}-${req.file.originalname}`;
+
+        await this.storageService.uploadFile(
+            req.file,
+            fileName
+        );
+
+        const signedUrl = await this.storageService.getSignedFileUrl(fileName);
 
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
-            data,
+            data: {
+                imageUrl:signedUrl,
+                fileName
+            },
         });
     }
 
     public async deleteTempFile(req: AuthRequest, res: Response): Promise<Response> {
 
-        await this.b2Service.deleteFile(
+        await this.storageService.deleteFile(
             req.body.fileName
         );
 
