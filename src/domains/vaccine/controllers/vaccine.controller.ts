@@ -6,12 +6,13 @@ import { BadRequestException, NotFoundException } from "../../../common/exceptio
 import { generateResponse } from "../../../common/utils/response.util";
 import { HttpStatus } from "../../../common/constants/http-status.constants";
 import { SuccessMessages } from "../../../common/constants/success-messages.constants";
+import { AuthRequest } from "../../../common/interfaces/auth-request.interface";
 
 @Service()
 export class VaccineController {
     constructor(private service: VaccineService) { }
-    async create(req: Request, res: Response): Promise<Response> {
-        const data = await this.service.create(req.body);
+    async create(req: AuthRequest, res: Response): Promise<Response> {
+        const data = await this.service.create(req.user!.userId, req.body);
         return generateResponse(res, {
             statusCode: HttpStatus.CREATED,
             message: SuccessMessages.CREATED,
@@ -48,7 +49,7 @@ export class VaccineController {
         });
     }
 
-    async update(req: Request, res: Response) {
+    async update(req: AuthRequest, res: Response) {
         const id = Number(req.params.id);
         if (Number.isNaN(id) || id < 0)
             throw new BadRequestException("Invalid Id");
@@ -56,7 +57,7 @@ export class VaccineController {
         if (!vaccine)
             throw new NotFoundException("Vaccine Not found");
 
-        const data = await this.service.update(id, req.body);
+        const data = await this.service.update(id, req.user!.userId, req.body);
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             message: SuccessMessages.UPDATED,
@@ -64,11 +65,11 @@ export class VaccineController {
         });
     }
 
-    async disable(req: Request, res: Response) {
+    async disable(req: AuthRequest, res: Response) {
         const id = Number(req.params.id);
         if (Number.isNaN(id) || id < 0)
             throw new BadRequestException("Invalid Id");
-        await this.service.disable(id);
+        await this.service.disable(id, req.user!.userId);
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             message: "Vaccine disabled successfully",

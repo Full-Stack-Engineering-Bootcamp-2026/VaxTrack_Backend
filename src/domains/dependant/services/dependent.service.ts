@@ -7,6 +7,8 @@ import { CreateDependentDto, DependentOutDto, UpdateDependentDto } from "../type
 import { NotFoundException } from "../../../common/exceptions";
 import { VaccinationRecordRepository } from "../../vaccination-record/repositories/vaccination-record.repository";
 import { status } from "../../vaccination-record/entities/vaccination-record.entity";
+import { ActivityService } from "../../activity/services/activity.service";
+import { ActivityAction } from "../../activity/entities/activity.entity";
 
 
 @Service()
@@ -17,7 +19,8 @@ export class DependentService {
         private readonly vaccineRepository: VaccineRepository,
         private readonly vaccinationRecordRepository: VaccinationRecordRepository,
         private readonly userRepository: UserRepository,
-        private readonly logger: LoggerService
+        private readonly logger: LoggerService,
+        private readonly activityService: ActivityService,
     ) { }
 
     public async create(guardianId: number, data: CreateDependentDto): Promise<DependentOutDto> {
@@ -55,6 +58,13 @@ export class DependentService {
             vaccinationRecords
         );
 
+        await this.activityService.logActivity(
+            ActivityAction.DEPENDENT_CREATED,
+            guardianId,
+            `Dependent ${dependent.fullName} created`,
+            "dependent",
+            String(dependent.id)
+        );
         return dependent;
     }
 
@@ -76,6 +86,7 @@ export class DependentService {
     }
 
     public async update(dependentId: number, guardianId: number, data: UpdateDependentDto): Promise<DependentOutDto> {
+
         const dependent = await this.repository.findById(
             dependentId,
             guardianId
@@ -84,12 +95,20 @@ export class DependentService {
         if (!dependent) {
             throw new NotFoundException("Dependent not found");
         }
+        this.logger.info(`Updating dependent ${dependent.id}`);
 
         await this.repository.update(dependentId, data);
 
         const updatedDependent = await this.repository.findById(
             dependentId,
             guardianId
+        );
+        await this.activityService.logActivity(
+            ActivityAction.DEPENDENT_UPDATED,
+            guardianId,
+            `Dependent updated`,
+            "dependent",
+            String(dependent.id)
         );
 
         return updatedDependent as DependentOutDto;
@@ -104,6 +123,17 @@ export class DependentService {
         if (!dependent) {
             throw new NotFoundException("Dependent not found");
         }
+        this.logger.info(
+            `Deleting dependent ${dependent.id}`
+        );
+
+        await this.activityService.logActivity(
+            ActivityAction.DEPENDENT_DELETED,
+            guardianId,
+            `Dependent deleted`,
+            "dependent",
+            String(dependent.id)
+        );
 
         await this.repository.softDelete(dependentId);
     }

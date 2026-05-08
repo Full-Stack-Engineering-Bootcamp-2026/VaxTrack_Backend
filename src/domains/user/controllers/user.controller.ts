@@ -86,7 +86,7 @@ export class UserController {
 
     public async createStaff(req: AuthRequest, res: Response): Promise<Response> {
 
-        await this.service.createStaff(req.body);
+        await this.service.createStaff(req.user!.userId, req.body);
 
         return generateResponse(res, {
             statusCode: HttpStatus.CREATED,

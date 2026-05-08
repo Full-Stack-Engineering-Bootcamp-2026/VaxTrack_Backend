@@ -8,13 +8,16 @@ import jwt from 'jsonwebtoken'
 import { EmailService } from "../../../common/utils/email-service";
 import crypto from "crypto";
 import { User, UserRole } from "../entities/user.entity";
+import { ActivityService } from "../../activity/services/activity.service";
+import { ActivityAction } from "../../activity/entities/activity.entity";
 
 @Service()
 export class UserService {
     constructor(
         private readonly repository: UserRepository,
         private readonly logger: LoggerService,
-        private readonly emailService: EmailService
+        private readonly emailService: EmailService,
+        private readonly activityService: ActivityService,
 
     ) { }
 
@@ -46,6 +49,14 @@ export class UserService {
 
         await this.setupPasswordFlow(user);
 
+        await this.activityService.logActivity(
+            ActivityAction.USER_REGISTERED,
+            user.id,
+            `User ${user.email} registered`,
+            "user",
+            String(user.id)
+        );
+
     }
     public async login(data: UserLoginDto): Promise<LoginResponseDto> {
         this.logger.info(`Logging in user : ${data.email}`);
@@ -76,6 +87,13 @@ export class UserService {
             process.env.JWT_SECRET as string,
             { expiresIn: "1d" }
         )
+        await this.activityService.logActivity(
+            ActivityAction.USER_LOGGED_IN,
+            user.id,
+            `User logged in`,
+            "user",
+            String(user.id)
+        );
         return {
             accessToken: token,
             tokenType: "Bearer",
@@ -127,6 +145,8 @@ export class UserService {
             throw new NotFoundException("User with this token not found");
         }
 
+        this.logger.info(`Resetting password for user: ${user.email}`);
+
         if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
             throw new BadRequestException("Token expired");
         }
@@ -137,6 +157,13 @@ export class UserService {
 
 
         await this.emailService.sendPasswordChangedEmail(user.email);
+        await this.activityService.logActivity(
+            ActivityAction.PASSWORD_RESET,
+            user.id,
+            `Password reset successful`,
+            "user",
+            String(user.id)
+        );
     }
 
     public async getProfile(userId: number): Promise<UserOutDto> {
@@ -157,10 +184,19 @@ export class UserService {
         if (!user) {
             throw new NotFoundException("User not found");
         }
+        this.logger.info(`Updating profile for user: ${user.id}`);
 
         const updatedUser = await this.repository.updateProfile(
             userId,
             data
+        );
+
+        await this.activityService.logActivity(
+            ActivityAction.PROFILE_UPDATED,
+            user.id,
+            `Profile updated`,
+            "user",
+            String(user.id)
         );
 
         return updatedUser as UserOutDto;
@@ -209,7 +245,7 @@ export class UserService {
         );
     }
 
-    public async createStaff(data: CreateStaffDto): Promise<void> {
+    public async createStaff(adminId:number,data: CreateStaffDto): Promise<void> {
 
         const existing = await this.repository.findByEmail(
             data.email
@@ -221,6 +257,8 @@ export class UserService {
             );
         }
 
+        this.logger.info(`Creating staff user: ${data.email}`);
+
         const user = await this.repository.createUser({
             fullName: data.fullName,
             email: data.email,
@@ -231,12 +269,27 @@ export class UserService {
             isActive: true,
         });
 
+        
+        await this.activityService.logActivity(
+            ActivityAction.STAFF_CREATED,
+            Number(adminId),
+            `Staff ${user.email} created`,
+            "user",
+            String(user.id)
+        );
+
         await this.setupPasswordFlow(user);
     }
 
     public async logout(userId: number): Promise<void> {
 
         this.logger.info(`User logged out: ${userId}`);
-
+        await this.activityService.logActivity(
+            ActivityAction.USER_LOGGED_OUT,
+            userId,
+            `User logged out`,
+            "user",
+            String(userId)
+        );
     }
 }
