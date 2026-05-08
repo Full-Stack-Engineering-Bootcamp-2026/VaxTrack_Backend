@@ -48,7 +48,7 @@ export class VaccinationRecordController {
             });
         }
 
-        const data = await this.service.update(recordId, req.body);
+        const data = await this.service.update(recordId, req.user!.userId, req.body);
 
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
@@ -81,7 +81,7 @@ export class VaccinationRecordController {
         req: AuthRequest,
         res: Response
     ): Promise<Response> {
-        await this.service.markOverdueVaccines();
+        await this.service.markOverdueVaccines(req.user!.userId);
 
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
