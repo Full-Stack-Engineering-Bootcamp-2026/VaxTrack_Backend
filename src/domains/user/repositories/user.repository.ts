@@ -16,12 +16,10 @@ export class UserRepository {
         return this.repository.findOne({ where: { email } });
     }
 
-    async create(data: UserCreateDto): Promise<User> {
-        const user = this.repository.create({
-            ...data,
-            role: UserRole.GUARDIAN,
-            isActive: true,
-        });
+    async createUser(data: Partial<User>): Promise<User> {
+
+        const user = this.repository.create(data);
+
         return this.repository.save(user);
     }
 
@@ -41,6 +39,7 @@ export class UserRepository {
             password,
             resetToken: "",
             resetTokenExpiry: null as unknown as Date,
+            isEmailVerified: true
         });
     }
 
@@ -58,6 +57,13 @@ export class UserRepository {
         await this.repository.update(id, {
             ...data,
         });
+
+        return this.findById(id);
+    }
+
+    async updateUser(id: number, data: Partial<User>): Promise<User | null> {
+
+        await this.repository.update(id, data);
 
         return this.findById(id);
     }
