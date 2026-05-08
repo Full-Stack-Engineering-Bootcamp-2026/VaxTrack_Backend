@@ -50,4 +50,54 @@ export class EmailService {
 
         await this.sendEmail(email, subject, html);
     }
+
+    public async sendPasswordSetupEmail(
+        email: string,
+        resetLink: string,
+        role: string
+    ): Promise<void> {
+
+        const subject =
+            "Setup Your VaxTrack Account";
+
+        const html = `
+            <div style="font-family: Arial, sans-serif;">
+
+                <h2>Welcome to VaxTrack</h2>
+
+                <p>
+                    Your ${role} account has been created.
+                </p>
+
+                <p>
+                    Please click below to setup your password.
+                </p>
+
+                <a
+                    href="${resetLink}"
+                    style="
+                        display:inline-block;
+                        padding:10px 20px;
+                        background:#7C3AED;
+                        color:#fff;
+                        text-decoration:none;
+                        border-radius:5px;
+                    "
+                >
+                    Setup Password
+                </a>
+
+                <p>
+                    This link expires in 15 minutes.
+                </p>
+
+            </div>
+    `;
+
+        await this.sendEmail(
+            email,
+            subject,
+            html
+        );
+    }
 }

@@ -56,4 +56,7 @@ export class User {
 
     @Column({ type: 'datetime', nullable: true })
     resetTokenExpiry: Date;
+
+    @Column({ default: false })
+    isEmailVerified: boolean;
 }

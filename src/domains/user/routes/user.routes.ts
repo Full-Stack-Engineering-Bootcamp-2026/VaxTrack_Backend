@@ -3,8 +3,10 @@ import { Service } from "typedi";
 import { UserController } from "../controllers/user.controller";
 import { validate } from "../../../common/middleware/validate.middleware";
 import { asyncHandler } from "../../../common/utils/async-handler";
-import { changePasswordSchema, forgotPasswordSchema, loginUserSchema, registerUserSchema, resetPasswordSchema, updateProfileSchema } from "../validator/user.validator";
+import { changePasswordSchema, createStaffSchema, forgotPasswordSchema, loginUserSchema, registerUserSchema, resetPasswordSchema, updateProfileSchema } from "../validator/user.validator";
 import { authenticate } from "../../../common/middleware/authenticate.middleware";
+import { requireRole } from "../../../common/middleware/authorize.middleware";
+import { UserRole } from "../entities/user.entity";
 
 @Service()
 export class UserRoutes {
@@ -62,6 +64,22 @@ export class UserRoutes {
             authenticate,
             validate(changePasswordSchema),
             asyncHandler(this.controller.changePassword.bind(this.controller))
+        );
+
+        this.router.post(
+            "/staff",
+
+            authenticate,
+
+            requireRole(UserRole.ADMIN),
+
+            validate(createStaffSchema),
+
+            asyncHandler(
+                this.controller.createStaff.bind(
+                    this.controller
+                )
+            )
         );
 
     }

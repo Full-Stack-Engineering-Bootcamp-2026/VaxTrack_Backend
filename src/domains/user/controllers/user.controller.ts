@@ -83,4 +83,14 @@ export class UserController {
             message: "Password changed successfully",
         });
     }
+
+    public async createStaff(req: AuthRequest, res: Response): Promise<Response> {
+
+        await this.service.createStaff(req.body);
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.CREATED,
+            message: "Staff user created successfully",
+        });
+    }
 }
