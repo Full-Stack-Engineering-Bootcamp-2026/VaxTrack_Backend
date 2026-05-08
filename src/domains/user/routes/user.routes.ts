@@ -7,6 +7,7 @@ import { changePasswordSchema, createStaffSchema, forgotPasswordSchema, loginUse
 import { authenticate } from "../../../common/middleware/authenticate.middleware";
 import { requireRole } from "../../../common/middleware/authorize.middleware";
 import { UserRole } from "../entities/user.entity";
+import { upload } from "../../../common/middleware/upload.middleware";
 
 @Service()
 export class UserRoutes {
@@ -55,6 +56,7 @@ export class UserRoutes {
         this.router.put(
             "/profile",
             authenticate,
+            requireRole(UserRole.GUARDIAN),
             validate(updateProfileSchema),
             asyncHandler(this.controller.updateProfile.bind(this.controller))
         );
@@ -86,6 +88,19 @@ export class UserRoutes {
             "/logout",
             authenticate,
             asyncHandler(this.controller.logout.bind(this.controller))
+        );
+
+        this.router.post(
+            "/profile-temp",
+            authenticate,
+            upload.single("image"),
+            asyncHandler(this.controller.uploadProfileTemp.bind(this.controller))
+        );
+
+        this.router.delete(
+            "/profile-temp",
+            authenticate,
+            asyncHandler(this.controller.deleteTempFile.bind(this.controller))
         );
 
     }

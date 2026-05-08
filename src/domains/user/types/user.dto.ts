@@ -54,3 +54,12 @@ export interface CreateStaffDto {
     email: string;
     phone: string;
 }
+
+export interface UploadResponseDto {
+    imageUrl: string;
+    fileName: string;
+}
+
+export interface DeleteFileDto {
+    fileName: string;
+}

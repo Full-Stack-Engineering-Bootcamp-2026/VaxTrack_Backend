@@ -10,6 +10,7 @@ import crypto from "crypto";
 import { User, UserRole } from "../entities/user.entity";
 import { ActivityService } from "../../activity/services/activity.service";
 import { ActivityAction } from "../../activity/entities/activity.entity";
+import { StorageService } from "../../../common/utils/storage.service";
 
 @Service()
 export class UserService {
@@ -18,7 +19,7 @@ export class UserService {
         private readonly logger: LoggerService,
         private readonly emailService: EmailService,
         private readonly activityService: ActivityService,
-
+        private readonly storageService: StorageService
     ) { }
 
     public async register(data: UserCreateDto): Promise<void> {
@@ -186,6 +187,17 @@ export class UserService {
         }
         this.logger.info(`Updating profile for user: ${user.id}`);
 
+        if (
+            user.imageUrl &&
+            data.imageUrl &&
+            user.imageUrl !== data.imageUrl
+        ) {
+
+            await this.storageService.deleteFile(
+                user.imageUrl
+            );
+        }
+
         const updatedUser = await this.repository.updateProfile(
             userId,
             data
@@ -198,8 +210,21 @@ export class UserService {
             "user",
             String(user.id)
         );
+        const signedImageUrl = updatedUser?.imageUrl
 
-        return updatedUser as UserOutDto;
+            ? await this.storageService.getSignedFileUrl(updatedUser.imageUrl)
+            : null;
+
+        return {
+            id: updatedUser!.id,
+            fullName: updatedUser!.fullName,
+            email: updatedUser!.email,
+            phone: updatedUser!.phone,
+            role: updatedUser!.role,
+            isActive: updatedUser!.isActive,
+            createdAt: updatedUser!.createdAt,
+            imageUrl: signedImageUrl || undefined,
+        };
     }
 
     public async changePassword(userId: number, data: ChangePasswordDto): Promise<void> {
@@ -245,7 +270,7 @@ export class UserService {
         );
     }
 
-    public async createStaff(adminId:number,data: CreateStaffDto): Promise<void> {
+    public async createStaff(adminId: number, data: CreateStaffDto): Promise<void> {
 
         const existing = await this.repository.findByEmail(
             data.email
@@ -269,7 +294,7 @@ export class UserService {
             isActive: true,
         });
 
-        
+
         await this.activityService.logActivity(
             ActivityAction.STAFF_CREATED,
             Number(adminId),
