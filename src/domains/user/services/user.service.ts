@@ -233,4 +233,10 @@ export class UserService {
 
         await this.setupPasswordFlow(user);
     }
+
+    public async logout(userId: number): Promise<void> {
+
+        this.logger.info(`User logged out: ${userId}`);
+
+    }
 }

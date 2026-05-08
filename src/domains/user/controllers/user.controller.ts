@@ -93,4 +93,14 @@ export class UserController {
             message: "Staff user created successfully",
         });
     }
+
+    public async logout(req: AuthRequest, res: Response): Promise<Response> {
+
+        await this.service.logout(req.user!.userId);
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: "Logged out successfully",
+        });
+    }
 }

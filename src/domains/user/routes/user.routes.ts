@@ -82,5 +82,11 @@ export class UserRoutes {
             )
         );
 
+        this.router.post(
+            "/logout",
+            authenticate,
+            asyncHandler(this.controller.logout.bind(this.controller))
+        );
+
     }
 }
