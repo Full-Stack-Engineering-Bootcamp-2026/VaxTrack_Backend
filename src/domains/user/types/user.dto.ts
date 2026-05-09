@@ -63,3 +63,8 @@ export interface UploadResponseDto {
 export interface DeleteFileDto {
     fileName: string;
 }
+
+export interface PaginationDto {
+    page?: number;
+    limit?: number;
+}

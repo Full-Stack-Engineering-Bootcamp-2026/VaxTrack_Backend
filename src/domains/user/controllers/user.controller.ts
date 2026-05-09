@@ -129,7 +129,7 @@ export class UserController {
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             data: {
-                imageUrl:signedUrl,
+                imageUrl: signedUrl,
                 fileName
             },
         });
@@ -144,6 +144,60 @@ export class UserController {
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             message: "Temp file deleted",
+        });
+    }
+
+    public async getAllUsers(req: AuthRequest, res: Response): Promise<Response> {
+
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
+
+        const data = await this.service.getAllUsers(
+            page,
+            limit
+        );
+
+        return generateResponse(res, {
+            statusCode:
+                HttpStatus.OK,
+            data,
+        });
+    }
+
+    public async getAllStaff(req: AuthRequest, res: Response): Promise<Response> {
+
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
+
+        const data = await this.service.getAllStaff(
+            page,
+            limit
+        );
+
+        return generateResponse(res, {
+            statusCode:
+                HttpStatus.OK,
+            data,
+        });
+    }
+
+    public async getAllGuardians(req: AuthRequest, res: Response): Promise<Response> {
+
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
+
+        const data = await this.service.getAllGuardians(
+            page,
+            limit
+        );
+
+        return generateResponse(res, {
+            statusCode:
+                HttpStatus.OK,
+            data,
         });
     }
 }

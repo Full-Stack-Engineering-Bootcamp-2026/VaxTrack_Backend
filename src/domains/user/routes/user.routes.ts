@@ -103,5 +103,26 @@ export class UserRoutes {
             asyncHandler(this.controller.deleteTempFile.bind(this.controller))
         );
 
+        this.router.get(
+            "/",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.getAllUsers.bind(this.controller))
+        );
+
+        this.router.get(
+            "/staff",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.getAllStaff.bind(this.controller))
+        );
+
+        this.router.get(
+            "/guardians",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.getAllGuardians.bind(this.controller))
+        );
+
     }
 }

@@ -14,6 +14,7 @@ import { requireRole } from "./common/middleware/authorize.middleware";
 import { UserRole } from "./domains/user/entities/user.entity";
 import { VaccinationRecordRoutes } from "./domains/vaccination-record/routes/vaccination-record.routes";
 import { DependentRoutes } from "./domains/dependant/routes/dependent.routes";
+import { ActivityRoutes } from "./domains/activity/routes/activity.routes";
 
 dotenv.config();
 
@@ -60,11 +61,13 @@ class Application {
     const vaccineRoutes = Container.get(VaccineRoutes)
     const vaccinationRecordRoutes = Container.get(VaccinationRecordRoutes);
     const dependentRoutes = Container.get(DependentRoutes)
+    const activityRoutes = Container.get(ActivityRoutes)
 
     this.app.use("/api/users", userRoutes.getRoutes())
     this.app.use("/api/vaccines", authenticate, requireRole(UserRole.ADMIN, UserRole.STAFF), vaccineRoutes.getRoutes())
     this.app.use("/api/vaccination-record", authenticate, vaccinationRecordRoutes.getRoutes());
     this.app.use("/api/dependents", authenticate, requireRole(UserRole.GUARDIAN), dependentRoutes.getRoutes());
+    this.app.use("/api/activities", activityRoutes.getRoutes());
     this.app.use(notFoundHandler);
     this.app.use(errorHandler);
   }

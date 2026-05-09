@@ -24,11 +24,23 @@ export class VaccinationRecordRepository {
         await this.repository.update(id, data);
     }
 
-    async findTimelineByDependent(dependentId: number): Promise<VaccinationRecord[]> {
-        return this.repository.find({
-            where: { dependent: { id: dependentId } }, relations: { vaccine: true }, order: {
+    async findTimelineByDependent(dependentId: number, page: number, limit: number): Promise<[VaccinationRecord[], number]> {
+
+        return this.repository.findAndCount({
+
+            where: {
+                dependent: {
+                    id: dependentId,
+                },
+            },
+            relations: {
+                vaccine: true,
+            },
+            order: {
                 dueDate: "ASC",
-            }
+            },
+            skip: (page - 1) * limit,
+            take: limit,
         });
     }
 
@@ -75,51 +87,87 @@ export class VaccinationRecordRepository {
         return this.repository.count({ where: { status: status.OVERDUE } }); //admin and staff
     }
 
-    async findUpcomingVaccines(guardianId?: number): Promise<VaccinationRecord[]> {
-        if (guardianId) {  //guardian
-            return this.repository.find({
-                where: { status: status.UPCOMING, dependent: { guardian: { id: guardianId } } }, relations: {
+    async findUpcomingVaccines(page: number, limit: number, guardianId?: number): Promise<[VaccinationRecord[], number]> {
+
+        if (guardianId) {
+
+            return this.repository.findAndCount({
+                where: {
+                    status: status.UPCOMING,
+                    dependent: {
+                        guardian: {
+                            id: guardianId,
+                        },
+                    },
+                },
+
+                relations: {
                     vaccine: true,
-                    dependent: true
+                    dependent: true,
                 },
                 order: {
-                    dueDate: "ASC"
+                    dueDate: "ASC",
                 },
-                take: 10
+                skip: (page - 1) * limit,
+                take: limit,
             });
         }
-        return this.repository.find({
-            where: { status: status.UPCOMING }, relations: {
+
+        return this.repository.findAndCount({
+            where: {
+                status: status.UPCOMING,
+            },
+            relations: {
                 vaccine: true,
-                dependent: true
+                dependent: true,
             },
             order: {
-                dueDate: "ASC"
+                dueDate: "ASC",
             },
-            take: 10
+            skip: (page - 1) * limit,
+            take: limit,
         });
     }
 
-    async findOverdueVaccines(guardianId?: number): Promise<VaccinationRecord[]> {
-        if (guardianId) {  //guardian
-            return this.repository.find({
-                where: { status: status.OVERDUE, dependent: { guardian: { id: guardianId } } }, relations: {
+    async findOverdueVaccines(page: number, limit: number, guardianId?: number): Promise<[VaccinationRecord[], number]> {
+
+        if (guardianId) {
+
+            return this.repository.findAndCount({
+                where: {
+                    status: status.OVERDUE,
+                    dependent: {
+                        guardian: {
+                            id: guardianId,
+                        },
+                    },
+                },
+
+                relations: {
                     vaccine: true,
-                    dependent: true
+                    dependent: true,
                 },
                 order: {
-                    dueDate: "ASC"
+                    dueDate: "ASC",
                 },
+                skip: (page - 1) * limit,
+                take: limit,
             });
         }
-        return this.repository.find({
-            where: { status: status.OVERDUE }, relations: {
+
+        return this.repository.findAndCount({
+            where: {
+                status: status.OVERDUE,
+            },
+            relations: {
                 vaccine: true,
-                dependent: true
+                dependent: true,
             },
             order: {
-                dueDate: "ASC"
-            }
+                dueDate: "ASC",
+            },
+            skip: (page - 1) * limit,
+            take: limit,
         });
     }
     async createMany(records: Partial<VaccinationRecord>[]): Promise<VaccinationRecord[]> {

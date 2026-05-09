@@ -9,6 +9,8 @@ import { VaccinationRecordRepository } from "../../vaccination-record/repositori
 import { status } from "../../vaccination-record/entities/vaccination-record.entity";
 import { ActivityService } from "../../activity/services/activity.service";
 import { ActivityAction } from "../../activity/entities/activity.entity";
+import { PaginatedResponseDto } from "../../../types/paginated-response.dto";
+import { Dependent } from "../entities/dependent.entity";
 
 
 @Service()
@@ -68,8 +70,21 @@ export class DependentService {
         return dependent;
     }
 
-    public async getAll(guardianId: number): Promise<DependentOutDto[]> {
-        return this.repository.findAllByGuardian(guardianId);
+    public async getAll(guardianId: number, page: number, limit: number): Promise<PaginatedResponseDto<DependentOutDto>> {
+        this.logger.info(`Fetching dependents`);
+
+        const [dependents, total] = await this.repository.findAllByGuardian(
+            guardianId,
+            page,
+            limit
+        );
+
+        return this.buildPaginatedResponse(
+            dependents,
+            total,
+            page,
+            limit
+        );
     }
 
     public async getById(dependentId: number, guardianId: number): Promise<DependentOutDto> {
@@ -143,5 +158,38 @@ export class DependentService {
         this.logger.info(`Fetching dependent stats`);
 
         return this.repository.getStats(guardianId);
+    }
+
+    private buildPaginatedResponse(dependents: Dependent[], total: number, page: number, limit: number): PaginatedResponseDto<DependentOutDto> {
+        return {
+            data: dependents.map((dependent) => ({
+                id: dependent.id,
+                fullName: dependent.fullName,
+                dateOfBirth:
+                    dependent.dateOfBirth,
+                gender:
+                    dependent.gender,
+                relationship:
+                    dependent.relationship,
+                notes:
+                    dependent.notes,
+                isActive:
+                    dependent.isActive,
+                createdAt:
+                    dependent.createdAt,
+            })),
+
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages:
+                    Math.ceil(total / limit),
+                hasNextPage:
+                    page < Math.ceil(total / limit),
+                hasPreviousPage:
+                    page > 1,
+            },
+        };
     }
 }

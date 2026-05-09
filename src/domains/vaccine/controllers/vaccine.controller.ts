@@ -21,7 +21,10 @@ export class VaccineController {
     }
 
     async findAll(req: Request, res: Response) {
-        const data = await this.service.findAll();
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
+        const data = await this.service.findAll(page, limit);
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             data,
@@ -29,7 +32,10 @@ export class VaccineController {
     }
 
     async findAllActive(req: Request, res: Response) {
-        const data = await this.service.findAllActive();
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
+        const data = await this.service.findAllActivePaginated(page,limit);
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             data,

@@ -17,8 +17,8 @@ export class DependentRepository {
         return this.repository.save(dependent);
     }
 
-    async findAllByGuardian(guardianId: number): Promise<Dependent[]> {
-        return this.repository.find({
+    async findAllByGuardian(guardianId: number, page: number, limit: number): Promise<[Dependent[], number]> {
+        return this.repository.findAndCount({
             where: {
                 guardian: {
                     id: guardianId,
@@ -28,6 +28,13 @@ export class DependentRepository {
             relations: {
                 guardian: true,
             },
+            order: {
+                createdAt: "DESC",
+            },
+
+            skip: (page - 1) * limit,
+
+            take: limit,
         });
     }
     async findById(dependentId: number, guardianId: number): Promise<Dependent | null> {

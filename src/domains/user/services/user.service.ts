@@ -353,4 +353,81 @@ export class UserService {
             String(userId)
         );
     }
+    private buildPaginatedResponse(users: User[], total: number, page: number, limit: number) {
+        return {
+
+            data: users.map((user) => ({
+                id: user.id,
+                fullName: user.fullName,
+                email: user.email,
+                phone: user.phone,
+                imageUrl: user.imageUrl,
+                role: user.role,
+                isActive: user.isActive,
+                createdAt: user.createdAt,
+            })),
+
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages:
+                    Math.ceil(total / limit),
+                hasNextPage:
+                    page < Math.ceil(total / limit),
+                hasPreviousPage:
+                    page > 1,
+            },
+        };
+    }
+    public async getAllUsers(page: number, limit: number) {
+
+        this.logger.info(`Fetching all users`);
+
+        const [users, total] = await this.repository.findAllUsers(
+            page,
+            limit
+        );
+
+        return this.buildPaginatedResponse(
+            users,
+            total,
+            page,
+            limit
+        );
+    }
+
+    public async getAllStaff(page: number, limit: number) {
+
+        this.logger.info(`Fetching all staff`);
+
+        const [users, total] = await this.repository.findAllStaff(
+            page,
+            limit
+        );
+
+        return this.buildPaginatedResponse(
+            users,
+            total,
+            page,
+            limit
+        );
+    }
+
+    public async getAllGuardians(page: number, limit: number) {
+
+        this.logger.info(`Fetching all guardians`);
+
+        const [users, total] = await this.repository.findAllGuardians(
+            page,
+            limit
+        );
+
+        return this.buildPaginatedResponse(
+            users,
+            total,
+            page,
+            limit
+        );
+    }
 }

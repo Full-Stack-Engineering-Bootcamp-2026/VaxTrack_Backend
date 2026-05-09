@@ -11,6 +11,7 @@ import { UserRole } from "../../user/entities/user.entity";
 
 import { NotFoundException } from "../../../common/exceptions";
 import { LoggerService } from "../../../common/utils/logger.service";
+import { PaginatedResponseDto } from "../../../types/paginated-response.dto";
 
 @Service()
 export class ActivityService {
@@ -38,22 +39,48 @@ export class ActivityService {
         });
     }
 
-    public async getRecentActivities(userId: number, role: UserRole): Promise<Activity[]> {
+public async getRecentActivities(
+    page: number,
+    limit: number,
+    userId: number,
+    role: UserRole
+): Promise<PaginatedResponseDto<Activity>>{
 
         this.logger.info(`Fetching recent activities`);
-        return this.repository.findRecentActivities(
+
+        const [activities, total] = await this.repository.findRecentActivities(
+            page,
+            limit,
+            role === UserRole.GUARDIAN ? userId : undefined
+        );
+
+        return this.buildPaginatedResponse(
+            activities,
+            total,
+            page,
+            limit
+        );
+    }
+
+public async getAllActivities(
+    page: number,
+    limit: number,
+    userId: number,
+    role: UserRole
+): Promise<PaginatedResponseDto<Activity>> {
+        this.logger.info(`Fetching all activities`);
+        const [activities, total] = await this.repository.findAll(
+            page,
+            limit,
             role === UserRole.GUARDIAN
                 ? userId
                 : undefined
         );
-    }
-
-    public async getAllActivities(userId: number, role: UserRole): Promise<Activity[]> {
-        this.logger.info(`Fetching all activities`);
-        return this.repository.findAll(
-            role === UserRole.GUARDIAN
-                ? userId
-                : undefined
+        return this.buildPaginatedResponse(
+            activities,
+            total,
+            page,
+            limit
         );
     }
 
@@ -77,5 +104,23 @@ export class ActivityService {
         }
 
         return activity;
+    }
+
+    private buildPaginatedResponse(activities: Activity[], total: number, page: number, limit: number) {
+
+        return {
+            data: activities,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages:
+                    Math.ceil(total / limit),
+                hasNextPage:
+                    page < Math.ceil(total / limit),
+                hasPreviousPage:
+                    page > 1,
+            },
+        };
     }
 }

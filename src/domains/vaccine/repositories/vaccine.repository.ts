@@ -17,13 +17,43 @@ export class VaccineRepository {
         return this.repository.save(vaccine);
     }
 
-    async findAll(): Promise<Vaccine[]> {
-        return this.repository.find();
+    async findAll(page: number, limit: number): Promise<[Vaccine[], number]> {
+
+        return this.repository.findAndCount({
+            order: {
+                createdAt: "DESC",
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+        });
     }
 
     async findAllActive(): Promise<Vaccine[]> {
-        return this.repository.find({ where: { isActive: true } });
+
+        return this.repository.find({
+            where: {
+                isActive: true,
+            },
+            order: {
+                createdAt: "DESC",
+            },
+        });
     }
+
+    async findAllActivePaginated(page: number, limit: number): Promise<[Vaccine[], number]> {
+
+        return this.repository.findAndCount({
+            where: {
+                isActive: true,
+            },
+            order: {
+                createdAt: "DESC",
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+    }
+
     async find(id: number): Promise<Vaccine | null> {
         return this.repository.findOne({ where: { id } });
     }
