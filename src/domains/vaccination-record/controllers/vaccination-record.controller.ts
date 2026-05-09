@@ -69,8 +69,7 @@ export class VaccinationRecordController {
             });
         }
 
-        const data = await this.service.getTimeline(dependentId);
-
+        const data = await this.service.getTimeline(dependentId, req.user!.userId, req.user!.role);
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             data,

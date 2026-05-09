@@ -44,8 +44,7 @@ export class ActivityController {
 
     public async getById(req: AuthRequest, res: Response): Promise<Response> {
 
-        const data = await this.service.getById(Number(req.params.id));
-
+        const data = await this.service.getById(Number(req.params.id), req.user!.userId, req.user!.role);
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             data,

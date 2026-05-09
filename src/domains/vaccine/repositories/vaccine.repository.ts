@@ -43,4 +43,19 @@ export class VaccineRepository {
 
         return (result.affected ?? 0) > 0;
     }
+
+    async getStats() {
+
+        const totalVaccines = await this.repository.count();
+
+        const activeVaccines = await this.repository.count({
+            where: {
+                isActive: true,
+            },
+        });
+        return {
+            totalVaccines,
+            activeVaccines,
+        };
+    }
 }

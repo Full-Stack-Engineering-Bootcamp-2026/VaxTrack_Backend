@@ -137,4 +137,11 @@ export class DependentService {
 
         await this.repository.softDelete(dependentId);
     }
+
+    public async getStats(guardianId: number) {
+
+        this.logger.info(`Fetching dependent stats`);
+
+        return this.repository.getStats(guardianId);
+    }
 }

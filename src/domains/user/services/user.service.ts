@@ -95,6 +95,9 @@ export class UserService {
             "user",
             String(user.id)
         );
+        const signedImageUrl = user.imageUrl
+            ? await this.storageService.getSignedFileUrl(user.imageUrl)
+            : undefined;
         return {
             accessToken: token,
             tokenType: "Bearer",
@@ -167,15 +170,41 @@ export class UserService {
         );
     }
 
-    public async getProfile(userId: number): Promise<UserOutDto> {
+    public async getProfile(
+        userId: number
+    ): Promise<UserOutDto> {
 
-        const user = await this.repository.findById(userId);
+        const user =
+            await this.repository.findById(userId);
 
         if (!user) {
-            throw new NotFoundException("User not found");
+
+            throw new NotFoundException(
+                "User not found"
+            );
         }
 
-        return user;
+        const signedImageUrl = user.imageUrl ? await this.storageService.getSignedFileUrl(user.imageUrl)
+            : undefined;
+
+        return {
+
+            id: user.id,
+
+            fullName: user.fullName,
+
+            email: user.email,
+
+            phone: user.phone,
+
+            role: user.role,
+
+            isActive: user.isActive,
+
+            createdAt: user.createdAt,
+
+            imageUrl: signedImageUrl,
+        };
     }
 
     public async updateProfile(userId: number, data: UpdateProfileDto): Promise<UserOutDto> {
@@ -249,6 +278,13 @@ export class UserService {
         const hashedPassword = await bcrypt.hash(data.newPassword, 10);
 
         await this.repository.updatePassword(userId, hashedPassword);
+        await this.activityService.logActivity(
+            ActivityAction.PASSWORD_RESET,
+            user.id,
+            "Password changed",
+            "user",
+            String(user.id)
+        );
     }
 
     private async setupPasswordFlow(user: User): Promise<void> {

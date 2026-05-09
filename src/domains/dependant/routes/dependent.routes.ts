@@ -55,5 +55,9 @@ export class DependentRoutes {
             "/:id",
             asyncHandler(this.controller.delete.bind(this.controller))
         );
+        this.router.get(
+            "/stats",
+            asyncHandler(this.controller.getStats.bind(this.controller))
+        );
     }
 }

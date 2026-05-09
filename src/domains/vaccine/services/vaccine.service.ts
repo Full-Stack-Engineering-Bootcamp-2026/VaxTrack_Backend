@@ -73,5 +73,10 @@ export class VaccineService {
         );
         return this.repo.disable(id);
     }
+    async getStats() {
+        this.logger.info(`Fetching vaccine stats`);
+
+        return this.repo.getStats();
+    }
 
 }
