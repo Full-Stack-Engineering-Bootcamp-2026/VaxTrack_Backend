@@ -75,4 +75,14 @@ export class VaccineController {
             message: "Vaccine disabled successfully",
         });
     }
+    async getStats(req: Request, res: Response): Promise<Response> {
+
+        const data = await this.service.getStats();
+
+        return generateResponse(res, {
+            statusCode:
+                HttpStatus.OK,
+            data,
+        });
+    }
 }

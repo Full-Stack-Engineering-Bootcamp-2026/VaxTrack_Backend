@@ -4,17 +4,17 @@ import { LoggerService } from "../../../common/utils/logger.service";
 import { status } from "../entities/vaccination-record.entity";
 import { RecordVaccinationDto, UpdateVaccinationDto, VaccinationRecordOutDto } from "../types/vaccination-record.dto";
 import { NotFoundException } from "../../../common/exceptions";
-import { number } from "joi";
-import { UserRepository } from "../../user/repositories/user.repository";
 import { ActivityService } from "../../activity/services/activity.service";
 import { ActivityAction } from "../../activity/entities/activity.entity";
+import { DependentRepository } from "../../dependant/repositories/dependent.repository";
+import { UserRole } from "../../user/entities/user.entity";
 
 @Service()
 export class VaccinationRecordService {
     constructor(
         private readonly repository: VaccinationRecordRepository,
         private readonly logger: LoggerService,
-        private readonly userRepository: UserRepository,
+        private readonly dependentRepository: DependentRepository,
         private readonly activityService: ActivityService,
     ) { }
     public async recordVaccination(vaccinationRecordId: number, staffId: number, data: RecordVaccinationDto): Promise<VaccinationRecordOutDto> {
@@ -63,7 +63,13 @@ export class VaccinationRecordService {
             throw new NotFoundException("Vaccination record not found");
         }
         this.logger.info(`Updating vaccination record ${vaccinationRecordId}`);
-        await this.repository.update(vaccinationRecordId, data);
+        const updateData: any = {
+            ...data,
+        };
+        if (data.administeredDate) {
+            updateData.status = status.COMPLETED;
+        }
+        await this.repository.update(vaccinationRecordId, updateData);
         const updatedRecord = await this.repository.findById(vaccinationRecordId);
         await this.activityService.logActivity(
             ActivityAction.VACCINATION_UPDATED,
@@ -75,7 +81,20 @@ export class VaccinationRecordService {
         return updatedRecord as VaccinationRecordOutDto;
     }
 
-    public async getTimeline(dependentId: number): Promise<VaccinationRecordOutDto[]> {
+    public async getTimeline(dependentId: number, userId: number, role: UserRole): Promise<VaccinationRecordOutDto[]> {
+
+        if (role === UserRole.GUARDIAN) {
+            const dependent = await this.dependentRepository.findByIdAndGuardian(
+                dependentId,
+                userId
+            );
+
+            if (!dependent) {
+                throw new NotFoundException(
+                    "Dependent not found"
+                );
+            }
+        }
         return this.repository.findTimelineByDependent(dependentId);
     }
 
@@ -90,7 +109,7 @@ export class VaccinationRecordService {
                 staffId,
                 `Vaccination marked overdue`,
                 "vaccination_record",
-                String(vaccine.id)  
+                String(vaccine.id)
             );
         }
     }

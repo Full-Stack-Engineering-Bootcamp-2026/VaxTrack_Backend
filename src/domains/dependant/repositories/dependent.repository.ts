@@ -54,4 +54,39 @@ export class DependentRepository {
             isActive: false,
         });
     }
+    async getStats(guardianId: number) {
+
+        const totalDependents = await this.repository.count({
+            where: {
+                guardian: {
+                    id: guardianId,
+                },
+            },
+        });
+
+        const activeDependents = await this.repository.count({
+            where: {
+                guardian: {
+                    id: guardianId,
+                },
+                isActive: true,
+            },
+        });
+
+        return {
+            totalDependents,
+            activeDependents,
+        };
+    }
+    async findByIdAndGuardian(dependentId: number, guardianId: number): Promise<Dependent | null> {
+
+        return this.repository.findOne({
+            where: {
+                id: dependentId,
+                guardian: {
+                    id: guardianId,
+                },
+            },
+        });
+    }
 }

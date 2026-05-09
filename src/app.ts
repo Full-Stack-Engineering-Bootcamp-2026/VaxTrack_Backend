@@ -12,7 +12,6 @@ import { VaccineRoutes } from "./domains/vaccine/routes/vaccine.routes";
 import { authenticate } from "./common/middleware/authenticate.middleware";
 import { requireRole } from "./common/middleware/authorize.middleware";
 import { UserRole } from "./domains/user/entities/user.entity";
-import { VaccinationRecord } from "./domains/vaccination-record/entities/vaccination-record.entity";
 import { VaccinationRecordRoutes } from "./domains/vaccination-record/routes/vaccination-record.routes";
 import { DependentRoutes } from "./domains/dependant/routes/dependent.routes";
 

@@ -78,4 +78,15 @@ export class DependentController {
             message: SuccessMessages.DELETED,
         });
     }
+
+    public async getStats(req: AuthRequest, res: Response): Promise<Response> {
+
+        const data = await this.service.getStats(req.user!.userId);
+
+        return generateResponse(res, {
+            statusCode:
+                HttpStatus.OK,
+            data,
+        });
+    }
 }
