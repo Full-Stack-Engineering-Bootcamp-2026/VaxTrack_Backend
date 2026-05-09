@@ -175,5 +175,44 @@ export class VaccinationRecordRepository {
 
         return this.repository.save(vaccinationRecords);
     }
+    async findAll(page: number, limit: number) {
+
+        const [data, total,] = await this.repository.findAndCount({
+            relations: {
+                dependent: true,
+                vaccine: true,
+                administeredBy: true,
+            },
+            order: {
+                dueDate: "ASC",
+            },
+            skip:
+                (page - 1) * limit,
+            take: limit,
+        });
+
+        return {
+            data,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page < Math.ceil(total / limit),
+                hasPreviousPage: page > 1,
+            },
+        };
+    }
+
+    async save(record: VaccinationRecord) {
+
+        return this.repository.save(
+            record
+        );
+    }
+
+    async delete(id: number) {
+        return this.repository.delete(id);
+    }
 
 }

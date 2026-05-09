@@ -59,7 +59,7 @@ export class StorageService {
 
         return getSignedUrl(this.client, command,
             {
-                expiresIn: 60 * 60,
+                expiresIn: 60 * 60 * 24 * 7,
             }
         );
     }

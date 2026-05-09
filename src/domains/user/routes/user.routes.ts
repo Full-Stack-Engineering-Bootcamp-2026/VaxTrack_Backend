@@ -56,7 +56,6 @@ export class UserRoutes {
         this.router.put(
             "/profile",
             authenticate,
-            requireRole(UserRole.GUARDIAN),
             validate(updateProfileSchema),
             asyncHandler(this.controller.updateProfile.bind(this.controller))
         );
