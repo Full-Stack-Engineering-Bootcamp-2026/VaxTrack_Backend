@@ -79,6 +79,29 @@ export class VaccinationRecordRoutes {
             authenticate,
             asyncHandler(this.controller.getStatusBreakdown.bind(this.controller))
         );
+        this.router.get(
+            "/",
+            authenticate,
+            asyncHandler(this.controller.getAll.bind(this.controller))
+        );
+        this.router.patch(
+            "/:id/status",
+            authenticate,
+            requireRole(
+                UserRole.ADMIN,
+                UserRole.STAFF
+            ),
+            asyncHandler(this.controller.updateStatus.bind(this.controller))
+        );
+        this.router.delete(
+            "/:id",
+            authenticate,
+            requireRole(
+                UserRole.ADMIN,
+                UserRole.STAFF
+            ),
+            asyncHandler(this.controller.delete.bind(this.controller))
+        );
     }
 
 
