@@ -22,10 +22,10 @@ export class ActivityRepository {
         return this.repository.save(activity);
     }
 
-    async findRecentActivities(userId?: number): Promise<Activity[]> {
+    async findRecentActivities(page: number, limit: number, userId?: number): Promise<[Activity[], number]> {
 
         if (userId) {
-            return this.repository.find({
+            return this.repository.findAndCount({
                 where: {
                     user: {
                         id: userId,
@@ -37,25 +37,28 @@ export class ActivityRepository {
                 order: {
                     createdAt: "DESC",
                 },
-                take: 10,
+                skip: (page - 1) * limit,
+                take: limit,
             });
         }
 
-        return this.repository.find({
+        return this.repository.findAndCount({
             relations: {
                 user: true,
             },
             order: {
                 createdAt: "DESC",
             },
-            take: 10,
+            skip: (page - 1) * limit,
+            take: limit,
         });
     }
 
-    async findAll(userId?: number): Promise<Activity[]> {
+    async findAll(page: number, limit: number, userId?: number): Promise<[Activity[], number]> {
 
         if (userId) {
-            return this.repository.find({
+
+            return this.repository.findAndCount({
                 where: {
                     user: {
                         id: userId,
@@ -67,16 +70,20 @@ export class ActivityRepository {
                 order: {
                     createdAt: "DESC",
                 },
+                skip: (page - 1) * limit,
+                take: limit,
             });
         }
 
-        return this.repository.find({
+        return this.repository.findAndCount({
             relations: {
                 user: true,
             },
             order: {
                 createdAt: "DESC",
             },
+            skip: (page - 1) * limit,
+            take: limit,
         });
     }
 

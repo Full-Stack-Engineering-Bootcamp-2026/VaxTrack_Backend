@@ -18,7 +18,13 @@ export class ActivityController {
 
     public async getRecentActivities(req: AuthRequest, res: Response): Promise<Response> {
 
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
+
         const data = await this.service.getRecentActivities(
+            page,
+            limit,
             req.user!.userId,
             req.user!.role
         );
@@ -31,7 +37,13 @@ export class ActivityController {
 
     public async getAllActivities(req: AuthRequest, res: Response): Promise<Response> {
 
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
+
         const data = await this.service.getAllActivities(
+            page,
+            limit,
             req.user!.userId,
             req.user!.role
         );

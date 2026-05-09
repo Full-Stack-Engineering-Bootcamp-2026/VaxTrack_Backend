@@ -67,4 +67,42 @@ export class UserRepository {
 
         return this.findById(id);
     }
+
+    async findAllUsers(page: number, limit: number): Promise<[User[], number]> {
+        return this.repository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                createdAt: "DESC",
+            },
+        });
+    }
+
+    async findAllStaff(page: number, limit: number): Promise<[User[], number]> {
+
+        return this.repository.findAndCount({
+            where: {
+                role: UserRole.STAFF,
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                createdAt: "DESC",
+            },
+        });
+    }
+
+    async findAllGuardians(page: number, limit: number): Promise<[User[], number]> {
+
+        return this.repository.findAndCount({
+            where: {
+                role: UserRole.GUARDIAN,
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                createdAt: "DESC",
+            },
+        });
+    }
 }
