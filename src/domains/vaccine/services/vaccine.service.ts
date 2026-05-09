@@ -7,6 +7,7 @@ import { UserRepository } from "../../user/repositories/user.repository";
 import { LoggerService } from "../../../common/utils/logger.service";
 import { ActivityService } from "../../activity/services/activity.service";
 import { ActivityAction } from "../../activity/entities/activity.entity";
+import { PaginatedResponseDto } from "../../../types/paginated-response.dto";
 
 @Service()
 export class VaccineService {
@@ -33,12 +34,42 @@ export class VaccineService {
         return vaccine
     }
 
-    async findAll(): Promise<Vaccine[]> {
-        return this.repo.findAll();
+    async findAll(page: number, limit: number): Promise<PaginatedResponseDto<Vaccine>> {
+
+        this.logger.info(`Fetching vaccines`);
+
+        const [vaccines, total] = await this.repo.findAll(
+            page,
+            limit
+        );
+
+        return this.buildPaginatedResponse(
+            vaccines,
+            total,
+            page,
+            limit
+        );
     }
 
     async findAllActive(): Promise<Vaccine[]> {
         return this.repo.findAllActive();
+    }
+
+    async findAllActivePaginated(page: number, limit: number): Promise<PaginatedResponseDto<Vaccine>> {
+
+        this.logger.info(`Fetching active vaccines`);
+
+        const [vaccines, total] = await this.repo.findAllActivePaginated(
+            page,
+            limit
+        );
+
+        return this.buildPaginatedResponse(
+            vaccines,
+            total,
+            page,
+            limit
+        );
     }
 
     async find(id: number): Promise<Vaccine | null> {
@@ -77,6 +108,25 @@ export class VaccineService {
         this.logger.info(`Fetching vaccine stats`);
 
         return this.repo.getStats();
+    }
+    private buildPaginatedResponse(
+        vaccines: Vaccine[],
+        total: number,
+        page: number,
+        limit: number
+    ): PaginatedResponseDto<Vaccine> {
+
+        return {
+            data: vaccines,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page < Math.ceil(total / limit),
+                hasPreviousPage: page > 1,
+            },
+        };
     }
 
 }

@@ -1,13 +1,14 @@
 import { Service } from "typedi";
 import { VaccinationRecordRepository } from "../repositories/vaccination-record.repository";
 import { LoggerService } from "../../../common/utils/logger.service";
-import { status } from "../entities/vaccination-record.entity";
+import { status, VaccinationRecord } from "../entities/vaccination-record.entity";
 import { RecordVaccinationDto, UpdateVaccinationDto, VaccinationRecordOutDto } from "../types/vaccination-record.dto";
 import { NotFoundException } from "../../../common/exceptions";
 import { ActivityService } from "../../activity/services/activity.service";
 import { ActivityAction } from "../../activity/entities/activity.entity";
 import { DependentRepository } from "../../dependant/repositories/dependent.repository";
 import { UserRole } from "../../user/entities/user.entity";
+import { PaginatedResponseDto } from "../../../types/paginated-response.dto";
 
 @Service()
 export class VaccinationRecordService {
@@ -81,21 +82,20 @@ export class VaccinationRecordService {
         return updatedRecord as VaccinationRecordOutDto;
     }
 
-    public async getTimeline(dependentId: number, userId: number, role: UserRole): Promise<VaccinationRecordOutDto[]> {
+    public async getTimeline(dependentId: number, page: number, limit: number): Promise<PaginatedResponseDto<VaccinationRecordOutDto>> {
 
-        if (role === UserRole.GUARDIAN) {
-            const dependent = await this.dependentRepository.findByIdAndGuardian(
-                dependentId,
-                userId
-            );
+        const [records, total] = await this.repository.findTimelineByDependent(
+            dependentId,
+            page,
+            limit
+        );
 
-            if (!dependent) {
-                throw new NotFoundException(
-                    "Dependent not found"
-                );
-            }
-        }
-        return this.repository.findTimelineByDependent(dependentId);
+        return this.buildPaginatedResponse(
+            records,
+            total,
+            page,
+            limit
+        );
     }
 
     public async markOverdueVaccines(staffId: number): Promise<void> {
@@ -134,11 +134,49 @@ export class VaccinationRecordService {
         return { completed, upcoming, overdue };
     }
 
-    public async getUpcomingVaccines(guardianId?: number) {
-        return this.repository.findUpcomingVaccines(guardianId);
+    public async getUpcomingVaccines(page: number, limit: number, guardianId?: number): Promise<PaginatedResponseDto<VaccinationRecordOutDto>> {
+        const [records, total] = await this.repository.findUpcomingVaccines(
+            page,
+            limit,
+            guardianId
+        );
+
+        return this.buildPaginatedResponse(
+            records,
+            total,
+            page,
+            limit
+        );
     }
 
-    public async getOverdueVaccines(guardianId?: number) {
-        return this.repository.findOverdueVaccines(guardianId);
+    public async getOverdueVaccines(page: number, limit: number, guardianId?: number): Promise<PaginatedResponseDto<VaccinationRecordOutDto>> {
+
+        const [records, total] = await this.repository.findOverdueVaccines(
+            page,
+            limit,
+            guardianId
+        );
+
+        return this.buildPaginatedResponse(
+            records,
+            total,
+            page,
+            limit
+        );
+    }
+
+    private buildPaginatedResponse(records: VaccinationRecord[], total: number, page: number, limit: number): PaginatedResponseDto<VaccinationRecordOutDto> {
+
+        return {
+            data: records,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page < Math.ceil(total / limit),
+                hasPreviousPage: page > 1,
+            },
+        };
     }
 }

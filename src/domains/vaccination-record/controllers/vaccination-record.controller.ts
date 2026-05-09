@@ -61,6 +61,10 @@ export class VaccinationRecordController {
         req: AuthRequest,
         res: Response
     ): Promise<Response> {
+
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
         const dependentId = Number(req.params.dependentId);
         if (isNaN(dependentId) || dependentId <= 0) {
             return generateResponse(res, {
@@ -69,7 +73,12 @@ export class VaccinationRecordController {
             });
         }
 
-        const data = await this.service.getTimeline(dependentId, req.user!.userId, req.user!.role);
+        const data = await this.service.getTimeline(
+            dependentId,
+            page,
+            limit
+        );
+
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             data,
@@ -115,11 +124,14 @@ export class VaccinationRecordController {
     }
 
     public async getUpcomingVaccines(req: AuthRequest, res: Response): Promise<Response> {
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
         let guardianId = undefined;
         if (req.user!.role === UserRole.GUARDIAN) {
             guardianId = req.user!.userId;
         }
-        const data = await this.service.getUpcomingVaccines(guardianId);
+        const data = await this.service.getUpcomingVaccines(page,limit,guardianId);
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             data,
@@ -128,10 +140,13 @@ export class VaccinationRecordController {
 
     public async getOverdueVaccines(req: AuthRequest, res: Response): Promise<Response> {
         let guardianId = undefined;
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
         if (req.user!.role === UserRole.GUARDIAN) {
             guardianId = req.user!.userId;
         }
-        const data = await this.service.getOverdueVaccines(guardianId);
+        const data = await this.service.getOverdueVaccines(page,limit,guardianId);
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             data,
