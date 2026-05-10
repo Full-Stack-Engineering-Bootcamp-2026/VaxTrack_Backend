@@ -39,6 +39,14 @@ export class DependentRoutes {
             "/",
             asyncHandler(this.controller.getAll.bind(this.controller))
         );
+        this.router.get(
+            "/stats",
+            asyncHandler(this.controller.getStats.bind(this.controller))
+        );
+        this.router.get(
+            "/dashboard",
+            asyncHandler(this.controller.getDashboard.bind(this.controller))
+        );
 
         this.router.get(
             "/:id",
@@ -55,9 +63,6 @@ export class DependentRoutes {
             "/:id",
             asyncHandler(this.controller.delete.bind(this.controller))
         );
-        this.router.get(
-            "/stats",
-            asyncHandler(this.controller.getStats.bind(this.controller))
-        );
+
     }
 }

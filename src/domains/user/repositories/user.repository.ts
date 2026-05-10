@@ -105,4 +105,24 @@ export class UserRepository {
             },
         });
     }
+
+    async softDelete(id: number): Promise<void> {
+        await this.repository.update(id, {
+            isActive: false,
+        })
+    }
+
+    async activate(id: number): Promise<void> {
+        await this.repository.update(id, {
+            isActive: true,
+        })
+    }
+
+    async findAnyById(id: number): Promise<User | null> {
+        return this.repository.findOne({
+            where: {
+                id
+            }
+        })
+    }
 }
