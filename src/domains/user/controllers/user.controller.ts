@@ -200,4 +200,32 @@ export class UserController {
             data,
         });
     }
+
+    public async deleteStaff(
+        req: AuthRequest,
+        res: Response
+    ): Promise<Response> {
+
+        await this.service.softDeleteStaff(req.user!.userId, Number(req.params.id))
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: "Staff deleted successfully",
+        })
+    }
+
+    public async activateStaff(
+        req: AuthRequest,
+        res: Response
+    ): Promise<Response> {
+
+        await this.service.activateStaff(
+            req.user!.userId,
+            Number(req.params.id)
+        )
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: "Staff activated successfully",
+        })
+    }
 }

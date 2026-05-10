@@ -64,6 +64,13 @@ export class UserService {
         const user = await this.repository.findByEmail(data.email);
         if (!user)
             throw new NotFoundException("User not found");
+        if (!user.isActive) {
+
+            throw new UnauthorizedException(
+                "Account has been deactivated"
+            )
+        }
+
 
         if (!user.isEmailVerified) {
             throw new UnauthorizedException(
@@ -412,6 +419,50 @@ export class UserService {
             page,
             limit
         );
+    }
+
+    public async softDeleteStaff(adminId: number, staffId: number): Promise<void> {
+        const user = await this.repository.findById(staffId)
+        if (!user)
+            throw new NotFoundException("Staff not found")
+
+        if (user.role !== UserRole.STAFF) {
+            throw new BadRequestException("Only staff can be deleted")
+        }
+
+        await this.repository.softDelete(staffId)
+
+        await this.activityService.logActivity(ActivityAction.STAFF_DELETED, adminId, `Staff ${user.email} deleted`, "user", String(user.id))
+    }
+
+    public async activateStaff(
+        adminId: number,
+        staffId: number
+    ): Promise<void> {
+
+        const user =
+            await this.repository.findAnyById(staffId)
+        if (!user) {
+            throw new NotFoundException(
+                "Staff not found"
+            )
+        }
+
+        if (user.role !== UserRole.STAFF) {
+            throw new BadRequestException("Only staff can be activated")
+        }
+
+        await this.repository.activate(
+            staffId
+        )
+
+        await this.activityService.logActivity(
+            ActivityAction.STAFF_CREATED,
+            adminId,
+            `Staff ${user.email} activated`,
+            "user",
+            String(user.id)
+        )
     }
 
     public async getAllGuardians(page: number, limit: number) {
