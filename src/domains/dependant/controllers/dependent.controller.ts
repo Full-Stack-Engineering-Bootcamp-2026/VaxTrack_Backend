@@ -94,4 +94,13 @@ export class DependentController {
             data,
         });
     }
+
+    public async getDashboard(req: AuthRequest, res: Response): Promise<Response> {
+        const data = await this.service.getDependentsDashboard(req.user!.userId);
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            data,
+        });
+    }
 }

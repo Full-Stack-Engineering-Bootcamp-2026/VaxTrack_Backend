@@ -159,6 +159,43 @@ export class DependentService {
 
         return this.repository.getStats(guardianId);
     }
+    public async getDependentsDashboard(guardianId: number) {
+        this.logger.info(`Fetching dependents dashboard stats for guardian ${guardianId}`);
+
+        const dependents = await this.repository.findAllWithVaccinationRecords(guardianId);
+
+        return dependents.map((dependent) => {
+            let completed = 0;
+            let upcoming = 0;
+            let overdue = 0;
+
+            if (dependent.vaccinationRecords) {
+                dependent.vaccinationRecords.forEach(record => {
+                    if (record.status === status.COMPLETED) completed++;
+                    if (record.status === status.UPCOMING) upcoming++;
+                    if (record.status === status.OVERDUE) overdue++;
+                });
+            }
+
+            const totalAssigned = completed + upcoming + overdue;
+            const progress = totalAssigned > 0
+                ? Math.round((completed / totalAssigned) * 100)
+                : 0;
+
+            return {
+                id: dependent.id,
+                fullName: dependent.fullName,
+                dateOfBirth: dependent.dateOfBirth,
+                gender: dependent.gender,
+                stats: {
+                    progress,
+                    completed,
+                    upcoming,
+                    overdue
+                }
+            };
+        });
+    }
 
     private buildPaginatedResponse(dependents: Dependent[], total: number, page: number, limit: number): PaginatedResponseDto<DependentOutDto> {
         return {
