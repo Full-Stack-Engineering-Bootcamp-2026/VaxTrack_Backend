@@ -113,7 +113,7 @@ export class UserService {
                 fullName: user.fullName,
                 email: user.email,
                 phone: user.phone,
-                imageUrl: user.imageUrl,
+                imageUrl: signedImageUrl,
                 role: user.role,
                 isActive: user.isActive,
                 createdAt: user.createdAt,
