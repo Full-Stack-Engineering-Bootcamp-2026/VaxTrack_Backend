@@ -50,5 +50,9 @@ export class VaccineRoutes {
             "/:id",
             asyncHandler(this.controller.disable.bind(this.controller))
         );
+        this.router.get(
+            "/stats",
+            asyncHandler(this.controller.getStats.bind(this.controller))
+        );
     }
 }

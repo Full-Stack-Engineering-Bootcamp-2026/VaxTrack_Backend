@@ -3,8 +3,11 @@ import { Service } from "typedi";
 import { UserController } from "../controllers/user.controller";
 import { validate } from "../../../common/middleware/validate.middleware";
 import { asyncHandler } from "../../../common/utils/async-handler";
-import { changePasswordSchema, forgotPasswordSchema, loginUserSchema, registerUserSchema, resetPasswordSchema, updateProfileSchema } from "../validator/user.validator";
+import { changePasswordSchema, createStaffSchema, forgotPasswordSchema, loginUserSchema, registerUserSchema, resetPasswordSchema, updateProfileSchema } from "../validator/user.validator";
 import { authenticate } from "../../../common/middleware/authenticate.middleware";
+import { requireRole } from "../../../common/middleware/authorize.middleware";
+import { UserRole } from "../entities/user.entity";
+import { upload } from "../../../common/middleware/upload.middleware";
 
 @Service()
 export class UserRoutes {
@@ -63,6 +66,74 @@ export class UserRoutes {
             validate(changePasswordSchema),
             asyncHandler(this.controller.changePassword.bind(this.controller))
         );
+
+        this.router.post(
+            "/staff",
+
+            authenticate,
+
+            requireRole(UserRole.ADMIN),
+
+            validate(createStaffSchema),
+
+            asyncHandler(
+                this.controller.createStaff.bind(
+                    this.controller
+                )
+            )
+        );
+
+        this.router.post(
+            "/logout",
+            authenticate,
+            asyncHandler(this.controller.logout.bind(this.controller))
+        );
+
+        this.router.post(
+            "/profile-temp",
+            authenticate,
+            upload.single("image"),
+            asyncHandler(this.controller.uploadProfileTemp.bind(this.controller))
+        );
+
+        this.router.delete(
+            "/profile-temp",
+            authenticate,
+            asyncHandler(this.controller.deleteTempFile.bind(this.controller))
+        );
+
+        this.router.get(
+            "/",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.getAllUsers.bind(this.controller))
+        );
+
+        this.router.get(
+            "/staff",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.getAllStaff.bind(this.controller))
+        );
+
+        this.router.get(
+            "/guardians",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.getAllGuardians.bind(this.controller))
+        );
+        this.router.patch(
+            "/staff/:id/deactivate",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.deleteStaff.bind(this.controller))
+        );
+        this.router.patch(
+            "/staff/:id/activate",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.activateStaff.bind(this.controller))
+        )
 
     }
 }

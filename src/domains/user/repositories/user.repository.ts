@@ -16,12 +16,10 @@ export class UserRepository {
         return this.repository.findOne({ where: { email } });
     }
 
-    async create(data: UserCreateDto): Promise<User> {
-        const user = this.repository.create({
-            ...data,
-            role: UserRole.GUARDIAN,
-            isActive: true,
-        });
+    async createUser(data: Partial<User>): Promise<User> {
+
+        const user = this.repository.create(data);
+
         return this.repository.save(user);
     }
 
@@ -41,6 +39,7 @@ export class UserRepository {
             password,
             resetToken: "",
             resetTokenExpiry: null as unknown as Date,
+            isEmailVerified: true
         });
     }
 
@@ -60,5 +59,70 @@ export class UserRepository {
         });
 
         return this.findById(id);
+    }
+
+    async updateUser(id: number, data: Partial<User>): Promise<User | null> {
+
+        await this.repository.update(id, data);
+
+        return this.findById(id);
+    }
+
+    async findAllUsers(page: number, limit: number): Promise<[User[], number]> {
+        return this.repository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                createdAt: "DESC",
+            },
+        });
+    }
+
+    async findAllStaff(page: number, limit: number): Promise<[User[], number]> {
+
+        return this.repository.findAndCount({
+            where: {
+                role: UserRole.STAFF,
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                createdAt: "DESC",
+            },
+        });
+    }
+
+    async findAllGuardians(page: number, limit: number): Promise<[User[], number]> {
+
+        return this.repository.findAndCount({
+            where: {
+                role: UserRole.GUARDIAN,
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                createdAt: "DESC",
+            },
+        });
+    }
+
+    async softDelete(id: number): Promise<void> {
+        await this.repository.update(id, {
+            isActive: false,
+        })
+    }
+
+    async activate(id: number): Promise<void> {
+        await this.repository.update(id, {
+            isActive: true,
+        })
+    }
+
+    async findAnyById(id: number): Promise<User | null> {
+        return this.repository.findOne({
+            where: {
+                id
+            }
+        })
     }
 }

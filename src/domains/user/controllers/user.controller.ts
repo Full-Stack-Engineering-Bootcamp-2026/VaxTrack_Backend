@@ -6,10 +6,15 @@ import { HttpStatus } from "../../../common/constants/http-status.constants";
 import { SuccessMessages } from "../../../common/constants/success-messages.constants";
 import { generateResponse } from "../../../common/utils/response.util";
 import { AuthRequest } from "../../../common/interfaces/auth-request.interface";
+import { BadRequestException } from "../../../common/exceptions";
+import { StorageService } from "../../../common/utils/storage.service";
 
 @Service()
 export class UserController {
-    constructor(private readonly service: UserService) { }
+    constructor(
+        private readonly service: UserService,
+        private readonly storageService: StorageService
+    ) { }
 
     public async register(req: Request, res: Response): Promise<Response> {
         const data = await this.service.register(req.body as UserCreateDto);
@@ -82,5 +87,145 @@ export class UserController {
             statusCode: HttpStatus.OK,
             message: "Password changed successfully",
         });
+    }
+
+    public async createStaff(req: AuthRequest, res: Response): Promise<Response> {
+
+        await this.service.createStaff(req.user!.userId, req.body);
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.CREATED,
+            message: "Staff user created successfully",
+        });
+    }
+
+    public async logout(req: AuthRequest, res: Response): Promise<Response> {
+
+        await this.service.logout(req.user!.userId);
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: "Logged out successfully",
+        });
+    }
+
+    public async uploadProfileTemp(req: AuthRequest, res: Response): Promise<Response> {
+
+        if (!req.file) {
+            throw new BadRequestException(
+                "Image file is required"
+            );
+        }
+
+        const fileName = `temp/profile/${Date.now()}-${req.file.originalname}`;
+
+        await this.storageService.uploadFile(
+            req.file,
+            fileName
+        );
+
+        const signedUrl = await this.storageService.getSignedFileUrl(fileName);
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            data: {
+                imageUrl: signedUrl,
+                fileName
+            },
+        });
+    }
+
+    public async deleteTempFile(req: AuthRequest, res: Response): Promise<Response> {
+
+        await this.storageService.deleteFile(
+            req.body.fileName
+        );
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: "Temp file deleted",
+        });
+    }
+
+    public async getAllUsers(req: AuthRequest, res: Response): Promise<Response> {
+
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
+
+        const data = await this.service.getAllUsers(
+            page,
+            limit
+        );
+
+        return generateResponse(res, {
+            statusCode:
+                HttpStatus.OK,
+            data,
+        });
+    }
+
+    public async getAllStaff(req: AuthRequest, res: Response): Promise<Response> {
+
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
+
+        const data = await this.service.getAllStaff(
+            page,
+            limit
+        );
+
+        return generateResponse(res, {
+            statusCode:
+                HttpStatus.OK,
+            data,
+        });
+    }
+
+    public async getAllGuardians(req: AuthRequest, res: Response): Promise<Response> {
+
+        const page = Number(req.query.page) || 1;
+
+        const limit = Math.min(Number(req.query.limit) || 10, 100);
+
+        const data = await this.service.getAllGuardians(
+            page,
+            limit
+        );
+
+        return generateResponse(res, {
+            statusCode:
+                HttpStatus.OK,
+            data,
+        });
+    }
+
+    public async deleteStaff(
+        req: AuthRequest,
+        res: Response
+    ): Promise<Response> {
+
+        await this.service.softDeleteStaff(req.user!.userId, Number(req.params.id))
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: "Staff deleted successfully",
+        })
+    }
+
+    public async activateStaff(
+        req: AuthRequest,
+        res: Response
+    ): Promise<Response> {
+
+        await this.service.activateStaff(
+            req.user!.userId,
+            Number(req.params.id)
+        )
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            message: "Staff activated successfully",
+        })
     }
 }

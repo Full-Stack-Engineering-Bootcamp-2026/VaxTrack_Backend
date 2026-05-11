@@ -1,9 +1,11 @@
+import { UserRole } from "../entities/user.entity";
+
 export interface UserOutDto {
     id: number;
     fullName: string;
     email: string;
     phone?: string;
-    role: "GUARDIAN" | "STAFF" | "ADMIN";
+    role: UserRole;
     isActive: boolean;
     createdAt: Date;
     imageUrl?: string;
@@ -24,6 +26,7 @@ export interface UserLoginDto {
 export interface LoginResponseDto {
     accessToken: string;
     tokenType: string;
+    user: UserOutDto;
 }
 
 export interface ForgotPasswordDto {
@@ -44,4 +47,24 @@ export interface UpdateProfileDto {
 export interface ChangePasswordDto {
     currentPassword: string;
     newPassword: string;
+}
+
+export interface CreateStaffDto {
+    fullName: string;
+    email: string;
+    phone: string;
+}
+
+export interface UploadResponseDto {
+    imageUrl: string;
+    fileName: string;
+}
+
+export interface DeleteFileDto {
+    fileName: string;
+}
+
+export interface PaginationDto {
+    page?: number;
+    limit?: number;
 }

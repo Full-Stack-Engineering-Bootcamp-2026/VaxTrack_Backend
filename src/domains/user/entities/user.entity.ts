@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { VaccinationRecord } from "../../vaccination-record/entities/vaccinationRecord.enity";
+import { VaccinationRecord } from "../../vaccination-record/entities/vaccination-record.entity";
 import { Activity } from "../../activity/entities/activity.entity";
 import { Dependent } from "../../dependant/entities/dependent.entity";
 
@@ -26,7 +26,7 @@ export class User {
     @Column({ nullable: true })
     phone: string;
 
-    @Column({ nullable: true })
+    @Column({ length:10000,nullable: true })
     imageUrl: string;
 
     @Column({
@@ -56,4 +56,7 @@ export class User {
 
     @Column({ type: 'datetime', nullable: true })
     resetTokenExpiry: Date;
+
+    @Column({ default: false })
+    isEmailVerified: boolean;
 }
