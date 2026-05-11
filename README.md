@@ -288,5 +288,5 @@ The API runs at `http://localhost:3000`
 ---
 
 ## Author
-
+ 
 Built by **Yash Kalange and Sanskar Rajput** — a healthcare-focused vaccination management backend system designed for guardians, healthcare staff, and administrators.
