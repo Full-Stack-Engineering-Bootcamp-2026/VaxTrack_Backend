@@ -131,7 +131,7 @@ export class VaccinationRecordController {
         if (req.user!.role === UserRole.GUARDIAN) {
             guardianId = req.user!.userId;
         }
-        const data = await this.service.getUpcomingVaccines(page,limit,guardianId);
+        const data = await this.service.getUpcomingVaccines(page, limit, guardianId);
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             data,
@@ -146,10 +146,57 @@ export class VaccinationRecordController {
         if (req.user!.role === UserRole.GUARDIAN) {
             guardianId = req.user!.userId;
         }
-        const data = await this.service.getOverdueVaccines(page,limit,guardianId);
+        const data = await this.service.getOverdueVaccines(page, limit, guardianId);
         return generateResponse(res, {
             statusCode: HttpStatus.OK,
             data,
+        });
+    }
+
+    public async getAll(req: AuthRequest, res: Response): Promise<Response> {
+
+        const page = Number(req.query.page) || 1;
+
+        const limit = Number(req.query.limit) || 10;
+
+        const data = await this.service.getAll(
+            page,
+            limit
+        );
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            data,
+        });
+    }
+
+    public async updateStatus(req: AuthRequest, res: Response) {
+
+        const id = Number(req.params.id);
+
+        const { status } = req.body;
+
+        const data = await this.service.updateStatus(
+            id,
+            status
+        );
+
+        return res.status(200).json({
+            success: true,
+            data,
+        });
+    }
+
+    public async delete(req: AuthRequest, res: Response) {
+
+        const id = Number(req.params.id);
+
+        await this.service.delete(id);
+
+        return res.status(200).json({
+            success: true,
+            message:
+                "Vaccination deleted",
         });
     }
 

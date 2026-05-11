@@ -96,4 +96,20 @@ export class DependentRepository {
             },
         });
     }
+    async findAllWithVaccinationRecords(guardianId: number): Promise<Dependent[]> {
+    return this.repository.find({
+        where: {
+            guardian: {
+                id: guardianId,
+            },
+            isActive: true,
+        },
+        relations: {
+            vaccinationRecords: true,
+        },
+        order: {
+            createdAt: "DESC",
+        },
+    });
+}
 }

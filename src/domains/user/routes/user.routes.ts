@@ -56,7 +56,6 @@ export class UserRoutes {
         this.router.put(
             "/profile",
             authenticate,
-            requireRole(UserRole.GUARDIAN),
             validate(updateProfileSchema),
             asyncHandler(this.controller.updateProfile.bind(this.controller))
         );
@@ -123,6 +122,18 @@ export class UserRoutes {
             requireRole(UserRole.ADMIN),
             asyncHandler(this.controller.getAllGuardians.bind(this.controller))
         );
+        this.router.patch(
+            "/staff/:id/deactivate",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.deleteStaff.bind(this.controller))
+        );
+        this.router.patch(
+            "/staff/:id/activate",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.activateStaff.bind(this.controller))
+        )
 
     }
 }

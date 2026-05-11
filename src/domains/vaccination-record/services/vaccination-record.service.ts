@@ -10,6 +10,7 @@ import { DependentRepository } from "../../dependant/repositories/dependent.repo
 import { UserRole } from "../../user/entities/user.entity";
 import { PaginatedResponseDto } from "../../../types/paginated-response.dto";
 
+
 @Service()
 export class VaccinationRecordService {
     constructor(
@@ -178,5 +179,46 @@ export class VaccinationRecordService {
                 hasPreviousPage: page > 1,
             },
         };
+
+    }
+    public async getAll(page: number, limit: number) {
+
+        return this.repository.findAll(
+            page,
+            limit
+        );
+    }
+
+    public async updateStatus(id: number, status: status) {
+
+        const record =
+            await this.repository.findById(id);
+
+        if (!record) {
+            throw new Error(
+                "Record not found"
+            );
+        }
+
+        record.status = status;
+
+        return this.repository.save(
+            record
+        );
+    }
+
+    public async delete(id: number) {
+
+        const record = await this.repository.findById(id);
+
+        if (!record) {
+            throw new Error(
+                "Record not found"
+            );
+        }
+
+        await this.repository.delete(
+            id
+        );
     }
 }
