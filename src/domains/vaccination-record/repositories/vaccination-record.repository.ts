@@ -215,4 +215,101 @@ export class VaccinationRecordRepository {
         return this.repository.delete(id);
     }
 
+    async getChartTrend() {
+
+        const records =
+            await this.repository.find()
+
+        const monthlyMap: Record<
+            string,
+            number
+        > = {}
+
+        records.forEach((record) => {
+
+            const month = new Date(
+                record.dueDate
+            ).toLocaleString(
+                "default",
+                {
+                    month: "short",
+                }
+            )
+
+            monthlyMap[month] =
+                (monthlyMap[month] || 0) + 1
+        })
+
+        const monthOrder = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ]
+
+        return monthOrder
+            .filter(
+                (month) =>
+                    monthlyMap[month]
+            )
+            .map((month) => ({
+                month,
+
+                vaccinations:
+                    monthlyMap[month],
+            }))
+    }
+    async getWeeklyTrend() {
+        const records = await this.repository.find()
+
+        const weeklyMap: Record<string,
+            {
+                count: number
+                timestamp: number
+            }> = {}
+
+        records.forEach((record) => {
+            const date = new Date(record.dueDate)
+
+            const startOfWeek = new Date(date)
+
+            startOfWeek.setDate(date.getDate() - date.getDay())
+
+            const label = startOfWeek.toLocaleDateString("default",
+                {
+                    month: "short",
+                    day: "numeric",
+                }
+            )
+
+            const timestamp = startOfWeek.getTime()
+
+            if (!weeklyMap[label]) {
+                weeklyMap[label] = {
+                    count: 0,
+                    timestamp,
+                }
+            }
+
+            weeklyMap[label].count += 1
+        })
+
+        return Object.entries(
+            weeklyMap
+        )
+            .sort((a, b) => a[1].timestamp - b[1].timestamp)
+            .map(([week, value,]) => ({
+                week,
+                vaccinations: value.count,
+            }))
+    }
+
 }

@@ -84,6 +84,11 @@ export class VaccinationRecordRoutes {
             authenticate,
             asyncHandler(this.controller.getAll.bind(this.controller))
         );
+        this.router.get(
+            "/trend",
+            authenticate,
+            asyncHandler(this.controller.getChartTrend.bind(this.controller))
+        );
         this.router.patch(
             "/:id/status",
             authenticate,
@@ -102,6 +107,13 @@ export class VaccinationRecordRoutes {
             ),
             asyncHandler(this.controller.delete.bind(this.controller))
         );
+
+        this.router.get(
+            "/trend/weekly",
+            authenticate,
+            requireRole(UserRole.ADMIN),
+            asyncHandler(this.controller.getWeeklyTrend.bind(this.controller))
+        )
     }
 
 
