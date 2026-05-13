@@ -221,4 +221,7 @@ export class VaccinationRecordService {
             id
         );
     }
-}
+    public async getChartTrend() {
+        return await this.repository.getChartTrend()
+    }
+}       

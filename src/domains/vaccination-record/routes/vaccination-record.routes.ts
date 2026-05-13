@@ -84,6 +84,11 @@ export class VaccinationRecordRoutes {
             authenticate,
             asyncHandler(this.controller.getAll.bind(this.controller))
         );
+        this.router.get(
+            "/trend",
+            authenticate,
+            asyncHandler(this.controller.getChartTrend.bind(this.controller))
+        );  
         this.router.patch(
             "/:id/status",
             authenticate,

@@ -215,4 +215,57 @@ export class VaccinationRecordRepository {
         return this.repository.delete(id);
     }
 
+    async getChartTrend() {
+
+        const records =
+            await this.repository.find()
+
+        const monthlyMap: Record<
+            string,
+            number
+        > = {}
+
+        records.forEach((record) => {
+
+            const month = new Date(
+                record.dueDate
+            ).toLocaleString(
+                "default",
+                {
+                    month: "short",
+                }
+            )
+
+            monthlyMap[month] =
+                (monthlyMap[month] || 0) + 1
+        })
+
+        const monthOrder = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ]
+
+        return monthOrder
+            .filter(
+                (month) =>
+                    monthlyMap[month]
+            )
+            .map((month) => ({
+                month,
+
+                vaccinations:
+                    monthlyMap[month],
+            }))
+    }
+
 }
