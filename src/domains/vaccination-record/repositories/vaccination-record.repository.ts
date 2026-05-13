@@ -267,5 +267,49 @@ export class VaccinationRecordRepository {
                     monthlyMap[month],
             }))
     }
+    async getWeeklyTrend() {
+        const records = await this.repository.find()
+
+        const weeklyMap: Record<string,
+            {
+                count: number
+                timestamp: number
+            }> = {}
+
+        records.forEach((record) => {
+            const date = new Date(record.dueDate)
+
+            const startOfWeek = new Date(date)
+
+            startOfWeek.setDate(date.getDate() - date.getDay())
+
+            const label = startOfWeek.toLocaleDateString("default",
+                {
+                    month: "short",
+                    day: "numeric",
+                }
+            )
+
+            const timestamp = startOfWeek.getTime()
+
+            if (!weeklyMap[label]) {
+                weeklyMap[label] = {
+                    count: 0,
+                    timestamp,
+                }
+            }
+
+            weeklyMap[label].count += 1
+        })
+
+        return Object.entries(
+            weeklyMap
+        )
+            .sort((a, b) => a[1].timestamp - b[1].timestamp)
+            .map(([week, value,]) => ({
+                week,
+                vaccinations: value.count,
+            }))
+    }
 
 }

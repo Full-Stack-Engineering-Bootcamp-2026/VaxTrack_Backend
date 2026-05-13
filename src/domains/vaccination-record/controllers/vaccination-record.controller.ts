@@ -170,11 +170,11 @@ export class VaccinationRecordController {
         });
     }
 
-    public async getChartTrend(req:AuthRequest,res:Response):Promise<Response>{
+    public async getChartTrend(req: AuthRequest, res: Response): Promise<Response> {
         const data = await this.service.getChartTrend();
 
-        return generateResponse(res,{
-            statusCode:HttpStatus.OK,
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
             data
         })
     }
@@ -208,5 +208,15 @@ export class VaccinationRecordController {
                 "Vaccination deleted",
         });
     }
+    public async getWeeklyTrend(req: AuthRequest, res: Response) {
+
+        const data = await this.service.getWeeklyTrend()
+
+        return generateResponse(res, {
+            statusCode: HttpStatus.OK,
+            data
+        })
+    }
+
 
 }
