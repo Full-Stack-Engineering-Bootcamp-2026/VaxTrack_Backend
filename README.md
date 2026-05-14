@@ -3,7 +3,7 @@
 <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
 <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" />
 <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" />
-<img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" />
+<img src="https://img.shields.io/badge/MySql-316192?style=for-the-badge&logo=MySql&logoColor=white" />
 <img src="https://img.shields.io/badge/TypeORM-FE0803?style=for-the-badge&logo=typeorm&logoColor=white" />
 <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" />
 
@@ -12,7 +12,7 @@
 # VaxTrack Backend
 
 **Backend API for the VaxTrack Vaccination Management System**  
-Built with Node.js, Express, TypeScript, PostgreSQL, TypeORM, and JWT Authentication.
+Built with Node.js, Express, TypeScript, MySql, TypeORM, and JWT Authentication.
 
 [Getting Started](#installation--setup) · [Features](#backend-features) · [Architecture](#backend-architecture) · [API Overview](#api-modules) · [Tech Stack](#tech-stack)
 
@@ -24,7 +24,7 @@ Built with Node.js, Express, TypeScript, PostgreSQL, TypeORM, and JWT Authentica
 
 VaxTrack Backend powers the complete server-side architecture of the VaxTrack vaccination management platform. It provides secure APIs, authentication, role-based authorization, vaccination management workflows, reporting capabilities, notification handling, and healthcare administration functionalities.
 
-The backend is designed using scalable modular architecture with TypeScript, Express, TypeORM, dependency injection, middleware-based validation, and PostgreSQL.
+The backend is designed using scalable modular architecture with TypeScript, Express, TypeORM, dependency injection, middleware-based validation, and MySql.
 
 ### Core Responsibilities
 
@@ -56,7 +56,7 @@ The backend is designed using scalable modular architecture with TypeScript, Exp
 - JWT authentication with role-based authorization
 - Modular, scalable architecture
 - Dependency Injection via TypeDI
-- PostgreSQL integration with TypeORM
+- MySql integration with TypeORM
 - Middleware-based request validation (Joi)
 - Centralized error handling
 - Pagination and dynamic filtering
@@ -74,7 +74,7 @@ The backend is designed using scalable modular architecture with TypeScript, Exp
 | Runtime | Node.js |
 | Framework | Express.js |
 | Language | TypeScript |
-| Database | PostgreSQL |
+| Database | MySQL |
 | ORM | TypeORM |
 | Authentication | JWT |
 | Validation | Joi |
